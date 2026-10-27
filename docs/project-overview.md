@@ -11,7 +11,6 @@
 - `laravel/framework` ^13: само приложение.
 - `inertiajs/inertia-laravel` v3: контроллер вызывает `Inertia::render('page', $props)`, а браузер получает React-страницу. Отдельного REST API нет.
 - `laravel/wayfinder`: генерирует TypeScript-функции для маршрутов и контроллеров (`resources/js/actions`, `resources/js/routes`). Во фронте URL не пишут руками, а импортируют эти функции.
-- `laravel/fortify`: авторизация (логин, регистрация, 2FA, passkeys). По условию проекта не нужна, удаляется тикетом `03`.
 - `laravel/tinker`: интерактивная консоль (REPL) с загруженным приложением.
 
 ### Фронтенд (`package.json`, `resources/js`)
