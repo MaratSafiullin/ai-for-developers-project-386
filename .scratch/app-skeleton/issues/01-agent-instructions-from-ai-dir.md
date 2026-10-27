@@ -4,7 +4,15 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** wontfix
+
+## Решение
+
+Не делаем. Хук `boost:update` в `post-update-cmd` оставляем как в стартер-ките, без изменений.
+
+Проверено 2026-10-28: на клоне без `boost.json` `composer run-script post-update-cmd` завершается с кодом 1 и сообщением «Please set up Boost with [php artisan boost:install] first.». Обходной путь: выполнить `php artisan boost:install` перед `composer update`.
+
+`.ai/` уже не попадает под `.gitignore`, а сгенерированные файлы агентов уже в нём. README уже описывает `.ai/` и локальную генерацию инструкций, так что по остальным пунктам тикета делать нечего.
 
 ## Контекст
 
