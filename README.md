@@ -1,6 +1,5 @@
 # Календарь звонков
 
-
 [![hexlet-check](https://github.com/MaratSafiullin/ai-for-developers-project-386/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/MaratSafiullin/ai-for-developers-project-386/actions)
 
 Разработайте совместно с ИИ сервис для бронирования календаря
@@ -47,20 +46,83 @@
 
 ## Стек
 
-- Разное
+Проект создан из [Laravel React Starter Kit](https://laravel.com/docs/starter-kits).
+
+- **Бэкенд:** PHP 8.5, Laravel 13, [Inertia](https://inertiajs.com) v3. Страницы рендерятся как React-компоненты через `Inertia::render()`.
+- **Фронтенд:** React 19, TypeScript, Tailwind CSS 4, shadcn/ui. Маршруты для фронта генерирует [Wayfinder](https://github.com/laravel/wayfinder).
+- **Сборка:** Vite+ (`vp`): сборщик, линтер и форматтер в одном, настраивается в `vite.config.ts`.
+- **База данных:** SQLite. Сессии, кеш и очередь хранятся в БД, отдельные сервисы не нужны.
+- **Тесты и качество:** Pest, Pint, Larastan (level 7), `tsc`.
 
 ## Установка
 
-<!-- Опишите установку: клонирование, зависимости, переменные окружения -->
+Нужны PHP 8.5 с Composer и Node.js 22 с npm.
 
 ```bash
 git clone https://github.com/MaratSafiullin/ai-for-developers-project-386.git
 cd ai-for-developers-project-386
+composer setup
 ```
+
+`composer setup` ставит PHP- и npm-зависимости, создаёт `.env` из `.env.example`, генерирует ключ приложения, применяет миграции к SQLite и собирает фронтенд.
 
 ## Использование
 
 <!-- Добавьте примеры запуска и запись asciinema — именно это смотрит работодатель -->
+
+```bash
+composer dev
+```
+
+Команда запускает в одном окне веб-сервер на http://localhost:8000, воркер очереди, просмотр логов (`pail`) и Vite с горячей перезагрузкой.
+
+| Команда             | Что делает                                        |
+| ------------------- | ------------------------------------------------- |
+| `composer dev`      | запуск для разработки                             |
+| `npm run build`     | прод-сборка фронтенда в `public/build`            |
+| `php artisan test`  | тесты Pest                                        |
+| `composer lint`     | автоформатирование PHP (Pint)                     |
+| `npm run check:fix` | автоисправление линтера и форматирование TS/React |
+| `composer ci:check` | все проверки разом (см. ниже)                     |
+
+## Проверки и CI
+
+`composer ci:check` — единая команда проверок, локально и в CI:
+
+1. `npm run check`: линтер и форматтер Vite+ (предупреждения считаются ошибками)
+2. `npm run types:check`: проверка типов TypeScript
+3. `composer lint:check`: стиль PHP (Pint)
+4. `composer types:check`: статический анализ PHP (Larastan)
+5. `php artisan test`: тесты Pest
+
+GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` и pull request выполняет `composer setup` и `composer ci:check`.
+
+Коммиты пишутся по [Conventional Commits](https://www.conventionalcommits.org/ru/v1.0.0/).
+
+## Разработка с AI-агентами
+
+В проекте установлен [Laravel Boost](https://laravel.com/docs/boost). Он даёт агентам MCP-сервер (документация по версиям пакетов, схема БД, логи), набор skills и файл инструкций `AGENTS.md`.
+
+**Инструкции и skills для агентов не хранятся в репозитории, они генерируются локально.** `AGENTS.md`, `CLAUDE.md`, `boost.json`, `.mcp.json`, `.claude/`, `.junie/` и каталоги других агентов лежат в `.gitignore`. Их содержимое зависит от версий пакетов и от того, каким агентом пользуется разработчик. После клонирования сгенерируйте их:
+
+```bash
+php artisan boost:install   # спросит, под каких агентов генерировать
+```
+
+При `composer update` Boost сам перегенерирует инструкции под новые версии пакетов (`php artisan boost:update`).
+
+Проектные правила для агентов хранятся в закоммиченном каталоге `.ai/`:
+
+- `.ai/guidelines/*.md`: правила, которые вклеиваются в `AGENTS.md` при генерации
+- `.ai/skills/<name>/SKILL.md`: свои skills
+- `.ai/rules/`: правила с привязкой к путям
+
+Не правьте `AGENTS.md` руками: изменения не попадут в git и пропадут при следующей генерации.
+
+## Документация
+
+- [`docs/project-overview.md`](docs/project-overview.md): подробный обзор инструментов проекта
+- `.scratch/`: спеки и тикеты текущей работы
 
 ---
 
