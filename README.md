@@ -56,7 +56,7 @@
 
 ## Установка
 
-Нужны PHP 8.5 с Composer и Node.js 22 с npm.
+Нужны PHP 8.5 с Composer и Node.js 22 (версия в `.nvmrc`) с npm.
 
 ```bash
 git clone https://github.com/MaratSafiullin/ai-for-developers-project-386.git
@@ -64,7 +64,7 @@ cd ai-for-developers-project-386
 composer setup
 ```
 
-`composer setup` ставит PHP- и npm-зависимости, создаёт `.env` из `.env.example`, генерирует ключ приложения, применяет миграции к SQLite и собирает фронтенд.
+`composer setup` ставит PHP- и npm-зависимости, подключает git-хуки из `.githooks`, создаёт `.env` из `.env.example`, генерирует ключ приложения, применяет миграции к SQLite и собирает фронтенд.
 
 ## Использование
 
@@ -97,7 +97,7 @@ composer dev
 
 GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` и pull request выполняет `composer setup` и `composer ci:check`.
 
-Коммиты пишутся по [Conventional Commits](https://www.conventionalcommits.org/ru/v1.0.0/).
+Коммиты пишутся по [Conventional Commits](https://www.conventionalcommits.org/ru/v1.0.0/), формат проверяет хук `.githooks/commit-msg`. На клоне, где `composer setup` уже выполнялся до появления хука, подключите его один раз: `git config core.hooksPath .githooks`.
 
 ## Разработка с AI-агентами
 
