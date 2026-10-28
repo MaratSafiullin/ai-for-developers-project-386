@@ -1,0 +1,28 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(composer ci:check)",
+            "Bash(composer ci:check *)",
+            "Bash(php artisan test)",
+            "Bash(php artisan test *)",
+            "Bash(npm run check)",
+            "Bash(npm run types:check)",
+            "mcp__laravel-boost__search-docs",
+            "mcp__laravel-boost__database-schema",
+            "mcp__laravel-boost__database-connections",
+            "mcp__laravel-boost__application-info",
+            "mcp__laravel-boost__last-error",
+            "mcp__laravel-boost__read-log-entries",
+            "mcp__laravel-boost__browser-logs",
+            "mcp__laravel-boost__get-absolute-url"
+        ],
+        "deny": [
+            "Edit(./.githooks/**)",
+            "Read(./.env)",
+            "Read(./.env.backup)",
+            "Read(./.env.production)",
+            "Read(./auth.json)",
+            "Read(./storage/*.key)"
+        ]
+    }
+}
