@@ -121,7 +121,6 @@ php artisan boost:install   # спросит, под каких агентов �
 
 ## Документация
 
-- [`docs/project-overview.md`](docs/project-overview.md): подробный обзор инструментов проекта
 - `.scratch/`: спеки и тикеты текущей работы
 
 ---
