@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Есть `.ai/guidelines/conventional-commits.md` с правилом и списком типов
 - [ ] После `php artisan boost:update` правило появляется в локальном AGENTS.md и не противоречит остальным правилам файла

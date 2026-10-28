@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Удалены Fortify (провайдер, конфиг, actions, правила валидации паролей и профиля) и пакет `laravel/fortify`
 - [ ] Удалены пакеты `@laravel/passkeys` и `input-otp`, lock-файлы обновлены
