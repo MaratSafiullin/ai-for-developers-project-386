@@ -89,12 +89,14 @@ composer dev     # = php artisan dev
 Boost генерирует для агентов три вещи:
 
 - MCP-сервер `php artisan boost:mcp` (`.mcp.json`): поиск документации по версиям пакетов, схема БД, логи, ошибки браузера, запись правил в `.ai/rules`.
-- Skills в `.claude/skills/` и `.junie/skills/` (список задан в `boost.json`): best practices Laravel, Inertia React, Tailwind, Wayfinder, тесты и т.д.
+- Skills в каталоге агента, например `.claude/skills/` (список задан в `boost.json`): best practices Laravel, Inertia React, Tailwind, Wayfinder, тесты и т.д.
 - `AGENTS.md`: инструкции для агентов.
 
 ### Что в репозитории, а что генерируется
 
-Все перечисленные файлы — `AGENTS.md`, `CLAUDE.md`, `boost.json`, `.mcp.json`, `.claude/`, `.junie/` и каталоги других агентов — лежат в `.gitignore`. Это решение стартер-кита, и проект его сохраняет:
+Все перечисленные файлы — `AGENTS.md`, `CLAUDE.md`, `boost.json`, `.mcp.json`, `.claude/`, `.junie/` и каталоги других агентов — лежат в `.gitignore`. Это решение стартер-кита, и проект его сохраняет. Исключение — `.claude/settings.json` с общими правилами разрешений Claude Code: Boost его не генерирует, поэтому он закоммичен.
+
+Почему остальное не в репозитории:
 
 - содержимое зависит от версий пакетов в `composer.lock`, поэтому его генерируют, а не хранят, как `vendor/`;
 - у разработчиков разные агенты (Claude Code, Cursor, Junie…), и каждый генерирует файлы только под свои;
