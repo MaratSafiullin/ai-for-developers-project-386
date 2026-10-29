@@ -121,7 +121,9 @@ php artisan boost:install   # спросит, под каких агентов �
 
 ## Документация
 
-- `.scratch/`: спеки и тикеты текущей работы
+- [GitHub Issues](https://github.com/MaratSafiullin/ai-for-developers-project-386/issues): спеки и тикеты текущей работы
+- `docs/agents/`: настройки скиллов агентов (трекер, лейблы триажа, доменные доки)
+- `docs/adr/`: архитектурные решения
 
 ---
 
