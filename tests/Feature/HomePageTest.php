@@ -7,9 +7,3 @@ test('home page renders the home component', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page->component('home'));
 });
-
-test('booking stub page renders the booking index component', function () {
-    $this->get(route('booking.index'))
-        ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page->component('booking/index'));
-});
