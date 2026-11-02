@@ -2,8 +2,12 @@
 
 use Inertia\Testing\AssertableInertia as Assert;
 
-test('booking stub page renders the booking index component', function () {
+test('booking page renders the booking index component with the owner timezone', function () {
+    config(['owner.timezone' => 'Asia/Tokyo']);
+
     $this->get(route('booking.index'))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page->component('booking/index'));
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('booking/index')
+            ->where('timezone', 'Asia/Tokyo'));
 });

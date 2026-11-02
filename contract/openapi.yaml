@@ -1,0 +1,60 @@
+openapi: 3.0.0
+info:
+  title: Календарь звонков
+  description: 'Календарь звонков: гость без регистрации записывается на звонок к владельцу.'
+  version: 0.0.0
+tags:
+  - name: guest
+paths:
+  /api/guest/v1/meeting-types:
+    get:
+      operationId: listGuestMeetingTypes
+      description: Каталог типов встреч, отсортированный по `id`.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingTypeList'
+      tags:
+        - guest
+components:
+  schemas:
+    MeetingType:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - durationMinutes
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+          maxLength: 1000
+        durationMinutes:
+          type: integer
+          format: int32
+          minimum: 15
+          maximum: 240
+          multipleOf: 15
+      description: 'Тип встречи: шаблон звонка с названием, необязательным описанием и длительностью.'
+    MeetingTypeList:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingType'
+      description: Каталог типов встреч в порядке создания.
