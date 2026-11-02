@@ -10,14 +10,7 @@
             "Edit(./.junie/**)",
             "Edit(./vendor/**)",
             "Edit(./node_modules/typescript/**)",
-            "Edit(./node_modules/.bin/**)",
-            "Read(./.env)",
-            "Read(./.env.backup)",
-            "Read(./.env.production)",
-            "Read(./.env.local)",
-            "Read(./.env.testing)",
-            "Read(./auth.json)",
-            "Read(./storage/*.key)"
+            "Edit(./node_modules/.bin/**)"
         ]
     }
 }
