@@ -5,6 +5,7 @@ info:
   version: 0.0.0
 tags:
   - name: guest
+  - name: owner
 paths:
   /api/guest/v1/meeting-types:
     get:
@@ -20,8 +21,68 @@ paths:
                 $ref: '#/components/schemas/MeetingTypeList'
       tags:
         - guest
+  /api/owner/v1/meeting-types:
+    get:
+      operationId: listOwnerMeetingTypes
+      description: Список типов встреч владельца, отсортированный по `id`.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingTypeList'
+      tags:
+        - owner
+    post:
+      operationId: createOwnerMeetingType
+      description: Создать тип встречи.
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingTypeEnvelope'
+        '422':
+          description: 'Ошибка данных: сообщения сгруппированы по полям запроса.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+      tags:
+        - owner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMeetingTypeRequest'
 components:
   schemas:
+    CreateMeetingTypeRequest:
+      type: object
+      required:
+        - name
+        - durationMinutes
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        durationMinutes:
+          type: integer
+          format: int32
+          minimum: 15
+          maximum: 240
+          multipleOf: 15
+        description:
+          type: string
+          nullable: true
+          maxLength: 1000
+      description: Данные нового типа встречи. Пустое описание сохраняется как `null`.
     MeetingType:
       type: object
       required:
@@ -48,6 +109,14 @@ components:
           maximum: 240
           multipleOf: 15
       description: 'Тип встречи: шаблон звонка с названием, необязательным описанием и длительностью.'
+    MeetingTypeEnvelope:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/MeetingType'
+      description: Один тип встречи в конверте `data`.
     MeetingTypeList:
       type: object
       required:
@@ -58,3 +127,18 @@ components:
           items:
             $ref: '#/components/schemas/MeetingType'
       description: Каталог типов встреч в порядке создания.
+    ValidationError:
+      type: object
+      required:
+        - message
+        - errors
+      properties:
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      description: 'Ошибка данных: сообщения сгруппированы по полям запроса.'

@@ -5,6 +5,15 @@ export type ClientOptions = {
 };
 
 /**
+ * Данные нового типа встречи. Пустое описание сохраняется как `null`.
+ */
+export type CreateMeetingTypeRequest = {
+    name: string;
+    durationMinutes: number;
+    description?: string | null;
+};
+
+/**
  * Тип встречи: шаблон звонка с названием, необязательным описанием и длительностью.
  */
 export type MeetingType = {
@@ -15,10 +24,27 @@ export type MeetingType = {
 };
 
 /**
+ * Один тип встречи в конверте `data`.
+ */
+export type MeetingTypeEnvelope = {
+    data: MeetingType;
+};
+
+/**
  * Каталог типов встреч в порядке создания.
  */
 export type MeetingTypeList = {
     data: Array<MeetingType>;
+};
+
+/**
+ * Ошибка данных: сообщения сгруппированы по полям запроса.
+ */
+export type ValidationError = {
+    message: string;
+    errors: {
+        [key: string]: Array<string>;
+    };
 };
 
 export type ListGuestMeetingTypesData = {
@@ -36,3 +62,44 @@ export type ListGuestMeetingTypesResponses = {
 };
 
 export type ListGuestMeetingTypesResponse = ListGuestMeetingTypesResponses[keyof ListGuestMeetingTypesResponses];
+
+export type ListOwnerMeetingTypesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/owner/v1/meeting-types';
+};
+
+export type ListOwnerMeetingTypesResponses = {
+    /**
+     * The request has succeeded.
+     */
+    200: MeetingTypeList;
+};
+
+export type ListOwnerMeetingTypesResponse = ListOwnerMeetingTypesResponses[keyof ListOwnerMeetingTypesResponses];
+
+export type CreateOwnerMeetingTypeData = {
+    body: CreateMeetingTypeRequest;
+    path?: never;
+    query?: never;
+    url: '/api/owner/v1/meeting-types';
+};
+
+export type CreateOwnerMeetingTypeErrors = {
+    /**
+     * Ошибка данных: сообщения сгруппированы по полям запроса.
+     */
+    422: ValidationError;
+};
+
+export type CreateOwnerMeetingTypeError = CreateOwnerMeetingTypeErrors[keyof CreateOwnerMeetingTypeErrors];
+
+export type CreateOwnerMeetingTypeResponses = {
+    /**
+     * The request has succeeded and a new resource has been created as a result.
+     */
+    201: MeetingTypeEnvelope;
+};
+
+export type CreateOwnerMeetingTypeResponse = CreateOwnerMeetingTypeResponses[keyof CreateOwnerMeetingTypeResponses];
