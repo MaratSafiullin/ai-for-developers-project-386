@@ -147,7 +147,7 @@ function CreateMeetingTypeForm() {
                     <Input
                         id="durationMinutes"
                         name="durationMinutes"
-                        type="number"
+                        inputMode="numeric"
                         required
                         aria-invalid={describedBy !== undefined}
                         aria-describedby={describedBy}

@@ -34,9 +34,9 @@ class StoreMeetingTypeRequest extends FormRequest
     public function meetingTypeAttributes(): array
     {
         return [
-            'name' => $this->string('name')->toString(),
+            'name' => $this->validated('name'),
             'description' => $this->validated('description'),
-            'duration_minutes' => $this->integer('durationMinutes'),
+            'duration_minutes' => (int) $this->validated('durationMinutes'),
         ];
     }
 }
