@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Kirschbaum\OpenApiValidator\ValidatesOpenApiSpec;
 use Tests\TestCase;
 
 /*
@@ -17,6 +18,20 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
+
+/*
+|--------------------------------------------------------------------------
+| API Tests
+|--------------------------------------------------------------------------
+|
+| Every request and response in the API group is validated against the
+| OpenAPI document generated from the TypeSpec contract.
+|
+*/
+
+pest()->use(ValidatesOpenApiSpec::class)
+    ->group('api')
+    ->in('Feature/Api');
 
 /*
 |--------------------------------------------------------------------------
