@@ -5,7 +5,7 @@ export type ClientOptions = {
 };
 
 /**
- * Данные нового типа встречи. Пустое описание сохраняется как `null`.
+ * Data for a new meeting type. An empty description is stored as `null`.
  */
 export type CreateMeetingTypeRequest = {
     name: string;
@@ -14,7 +14,7 @@ export type CreateMeetingTypeRequest = {
 };
 
 /**
- * Тип встречи: шаблон звонка с названием, необязательным описанием и длительностью.
+ * Meeting type: a call template with a name, an optional description, and a duration.
  */
 export type MeetingType = {
     id: number;
@@ -24,29 +24,29 @@ export type MeetingType = {
 };
 
 /**
- * Один тип встречи в конверте `data`.
+ * A single meeting type in a `data` envelope.
  */
 export type MeetingTypeEnvelope = {
     data: MeetingType;
 };
 
 /**
- * Каталог типов встреч в порядке создания.
+ * Meeting type catalog in creation order.
  */
 export type MeetingTypeList = {
     data: Array<MeetingType>;
 };
 
 /**
- * Ресурс не найден.
+ * Resource not found.
  */
 export type NotFoundError = {
     message: string;
 };
 
 /**
- * Слот: свободный интервал длиной в длительность типа встречи.
- * Время в ISO 8601 со смещением часового пояса владельца.
+ * Slot: a free interval as long as the meeting type duration.
+ * Times are ISO 8601 with the owner's time zone offset.
  */
 export type Slot = {
     startsAt: string;
@@ -54,26 +54,26 @@ export type Slot = {
 };
 
 /**
- * Свободные слоты типа встречи на все даты окна записи.
+ * Free slots of a meeting type for every date of the booking window.
  */
 export type SlotCalendar = {
     /**
-     * Часовой пояс владельца, например `Europe/Moscow`.
+     * Owner's time zone, for example `Europe/Moscow`.
      */
     timezone: string;
     days: Array<SlotDay>;
 };
 
 /**
- * Свободные слоты в конверте `data`.
+ * Free slots in a `data` envelope.
  */
 export type SlotCalendarEnvelope = {
     data: SlotCalendar;
 };
 
 /**
- * Дата окна записи по поясу владельца и её свободные слоты по возрастанию.
- * Дни без свободных слотов приходят с пустым списком.
+ * A booking window date in the owner's time zone and its free slots in ascending order.
+ * Days without free slots come with an empty list.
  */
 export type SlotDay = {
     date: string;
@@ -81,7 +81,7 @@ export type SlotDay = {
 };
 
 /**
- * Ошибка данных: сообщения сгруппированы по полям запроса.
+ * Invalid data: messages are grouped by request field.
  */
 export type ValidationError = {
     message: string;
@@ -117,11 +117,11 @@ export type ListGuestSlotsData = {
 
 export type ListGuestSlotsErrors = {
     /**
-     * Ресурс не найден.
+     * Resource not found.
      */
     404: NotFoundError;
     /**
-     * Ошибка данных: сообщения сгруппированы по полям запроса.
+     * Invalid data: messages are grouped by request field.
      */
     422: ValidationError;
 };
@@ -162,7 +162,7 @@ export type CreateOwnerMeetingTypeData = {
 
 export type CreateOwnerMeetingTypeErrors = {
     /**
-     * Ошибка данных: сообщения сгруппированы по полям запроса.
+     * Invalid data: messages are grouped by request field.
      */
     422: ValidationError;
 };

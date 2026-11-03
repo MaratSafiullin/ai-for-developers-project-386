@@ -42,7 +42,7 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
 export const listGuestMeetingTypesQueryKey = (options?: Options<ListGuestMeetingTypesData>) => createQueryKey('listGuestMeetingTypes', options);
 
 /**
- * Каталог типов встреч, отсортированный по `id`.
+ * Meeting type catalog sorted by `id`.
  */
 export const listGuestMeetingTypesOptions = (options?: Options<ListGuestMeetingTypesData>) => queryOptions<ListGuestMeetingTypesResponse, DefaultError, ListGuestMeetingTypesResponse, ReturnType<typeof listGuestMeetingTypesQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -60,7 +60,7 @@ export const listGuestMeetingTypesOptions = (options?: Options<ListGuestMeetingT
 export const listGuestSlotsQueryKey = (options: Options<ListGuestSlotsData>) => createQueryKey('listGuestSlots', options);
 
 /**
- * Свободные слоты типа встречи на 14 дат окна записи, начиная с завтрашней.
+ * Free slots of a meeting type for the 14 booking window dates, starting tomorrow.
  */
 export const listGuestSlotsOptions = (options: Options<ListGuestSlotsData>) => queryOptions<ListGuestSlotsResponse, ListGuestSlotsError, ListGuestSlotsResponse, ReturnType<typeof listGuestSlotsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -78,7 +78,7 @@ export const listGuestSlotsOptions = (options: Options<ListGuestSlotsData>) => q
 export const listOwnerMeetingTypesQueryKey = (options?: Options<ListOwnerMeetingTypesData>) => createQueryKey('listOwnerMeetingTypes', options);
 
 /**
- * Список типов встреч владельца, отсортированный по `id`.
+ * Owner's meeting type list sorted by `id`.
  */
 export const listOwnerMeetingTypesOptions = (options?: Options<ListOwnerMeetingTypesData>) => queryOptions<ListOwnerMeetingTypesResponse, DefaultError, ListOwnerMeetingTypesResponse, ReturnType<typeof listOwnerMeetingTypesQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -94,7 +94,7 @@ export const listOwnerMeetingTypesOptions = (options?: Options<ListOwnerMeetingT
 });
 
 /**
- * Создать тип встречи.
+ * Create a meeting type.
  */
 export const createOwnerMeetingTypeMutation = (options?: Partial<Options<CreateOwnerMeetingTypeData>>): UseMutationOptions<CreateOwnerMeetingTypeResponse, CreateOwnerMeetingTypeError, Options<CreateOwnerMeetingTypeData>> => {
     const mutationOptions: UseMutationOptions<CreateOwnerMeetingTypeResponse, CreateOwnerMeetingTypeError, Options<CreateOwnerMeetingTypeData>> = {

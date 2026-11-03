@@ -6,13 +6,13 @@ using Http;
 using OpenAPI;
 
 /**
- * Календарь звонков: гость без регистрации записывается на звонок к владельцу.
+ * Call calendar: a guest books a call with the owner without signing up.
  */
-@service(#{ title: "Календарь звонков" })
+@service(#{ title: "Call Calendar" })
 namespace CallCalendar;
 
 /**
- * Тип встречи: шаблон звонка с названием, необязательным описанием и длительностью.
+ * Meeting type: a call template with a name, an optional description, and a duration.
  */
 model MeetingType {
     id: int32;
@@ -31,21 +31,21 @@ model MeetingType {
 }
 
 /**
- * Каталог типов встреч в порядке создания.
+ * Meeting type catalog in creation order.
  */
 model MeetingTypeList {
     data: MeetingType[];
 }
 
 /**
- * Один тип встречи в конверте `data`.
+ * A single meeting type in a `data` envelope.
  */
 model MeetingTypeEnvelope {
     data: MeetingType;
 }
 
 /**
- * Данные нового типа встречи. Пустое описание сохраняется как `null`.
+ * Data for a new meeting type. An empty description is stored as `null`.
  */
 model CreateMeetingTypeRequest {
     ...OmitProperties<MeetingType, "id" | "description">;
@@ -55,8 +55,8 @@ model CreateMeetingTypeRequest {
 }
 
 /**
- * Слот: свободный интервал длиной в длительность типа встречи.
- * Время в ISO 8601 со смещением часового пояса владельца.
+ * Slot: a free interval as long as the meeting type duration.
+ * Times are ISO 8601 with the owner's time zone offset.
  */
 model Slot {
     startsAt: offsetDateTime;
@@ -64,8 +64,8 @@ model Slot {
 }
 
 /**
- * Дата окна записи по поясу владельца и её свободные слоты по возрастанию.
- * Дни без свободных слотов приходят с пустым списком.
+ * A booking window date in the owner's time zone and its free slots in ascending order.
+ * Days without free slots come with an empty list.
  */
 model SlotDay {
     date: plainDate;
@@ -73,11 +73,11 @@ model SlotDay {
 }
 
 /**
- * Свободные слоты типа встречи на все даты окна записи.
+ * Free slots of a meeting type for every date of the booking window.
  */
 model SlotCalendar {
     /**
-     * Часовой пояс владельца, например `Europe/Moscow`.
+     * Owner's time zone, for example `Europe/Moscow`.
      */
     timezone: string;
 
@@ -85,14 +85,14 @@ model SlotCalendar {
 }
 
 /**
- * Свободные слоты в конверте `data`.
+ * Free slots in a `data` envelope.
  */
 model SlotCalendarEnvelope {
     data: SlotCalendar;
 }
 
 /**
- * Ресурс не найден.
+ * Resource not found.
  */
 @error
 model NotFoundError {
@@ -101,7 +101,7 @@ model NotFoundError {
 }
 
 /**
- * Ошибка данных: сообщения сгруппированы по полям запроса.
+ * Invalid data: messages are grouped by request field.
  */
 @error
 model ValidationError {
@@ -111,13 +111,13 @@ model ValidationError {
 }
 
 /**
- * Операции гостя.
+ * Guest operations.
  */
 @route("/api/guest/v1")
 @tag("guest")
 namespace Guest {
     /**
-     * Каталог типов встреч, отсортированный по `id`.
+     * Meeting type catalog sorted by `id`.
      */
     @route("/meeting-types")
     @get
@@ -125,7 +125,7 @@ namespace Guest {
     op listMeetingTypes(): MeetingTypeList;
 
     /**
-     * Свободные слоты типа встречи на 14 дат окна записи, начиная с завтрашней.
+     * Free slots of a meeting type for the 14 booking window dates, starting tomorrow.
      */
     @route("/slots")
     @get
@@ -137,13 +137,13 @@ namespace Guest {
 }
 
 /**
- * Операции владельца.
+ * Owner operations.
  */
 @route("/api/owner/v1")
 @tag("owner")
 namespace Owner {
     /**
-     * Список типов встреч владельца, отсортированный по `id`.
+     * Owner's meeting type list sorted by `id`.
      */
     @route("/meeting-types")
     @get
@@ -151,7 +151,7 @@ namespace Owner {
     op listMeetingTypes(): MeetingTypeList;
 
     /**
-     * Создать тип встречи.
+     * Create a meeting type.
      */
     @route("/meeting-types")
     @post
