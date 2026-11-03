@@ -99,6 +99,18 @@ GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` 
 
 Коммиты пишутся по [Conventional Commits](https://www.conventionalcommits.org/ru/v1.0.0/): тип и scope на английском, описание на русском в инфинитиве, например `feat(api): добавить календарь свободных слотов`. Формат проверяет хук `.githooks/commit-msg`. На клоне, где `composer setup` уже выполнялся до появления хука, подключите его один раз: `git config core.hooksPath .githooks`.
 
+## Релизы
+
+Релизы выпускает [release-please](https://github.com/googleapis/release-please) по истории коммитов, руками версию и CHANGELOG не правят.
+
+1. После каждого push в `main` workflow `.github/workflows/release-please.yml` открывает или обновляет релизный PR `chore(main): release X.Y.Z`. В нём следующая версия и пополненный `CHANGELOG.md`.
+2. Версию определяют типы коммитов с прошлого релиза. Пока проект в `0.x`, `feat` поднимает минорную версию, `fix` — патч, ломающее изменение (`!`) — тоже минорную. Первый релиз — `0.1.0`.
+3. Когда релизный PR сливают, появляются тег `vX.Y.Z` и GitHub Release с теми же заметками.
+
+В CHANGELOG попадают `feat`, `fix`, `perf`, `revert`, `refactor` и `docs`; `chore`, `ci`, `build`, `test` и `style` скрыты. Настройки лежат в `release-please-config.json`, текущая версия — в `.release-please-manifest.json`.
+
+Релизный PR создаётся встроенным `GITHUB_TOKEN`, поэтому проверки `tests.yml` на нём сами не запускаются. Чтобы workflow мог открывать PR, в настройках репозитория (Settings → Actions → General) должна быть включена опция «Allow GitHub Actions to create and approve pull requests».
+
 ## Разработка с AI-агентами
 
 В проекте установлен [Laravel Boost](https://laravel.com/docs/boost). Он даёт агентам MCP-сервер (документация по версиям пакетов, схема БД, логи), набор skills и файл инструкций `AGENTS.md`.
