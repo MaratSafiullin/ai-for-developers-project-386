@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { ListGuestMeetingTypesData, ListGuestMeetingTypesResponses } from './types.gen';
+import type { CreateOwnerMeetingTypeData, CreateOwnerMeetingTypeErrors, CreateOwnerMeetingTypeResponses, ListGuestMeetingTypesData, ListGuestMeetingTypesResponses, ListOwnerMeetingTypesData, ListOwnerMeetingTypesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -22,3 +22,20 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * Каталог типов встреч, отсортированный по `id`.
  */
 export const listGuestMeetingTypes = <ThrowOnError extends boolean = false>(options?: Options<ListGuestMeetingTypesData, ThrowOnError>): RequestResult<ListGuestMeetingTypesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListGuestMeetingTypesResponses, unknown, ThrowOnError>({ url: '/api/guest/v1/meeting-types', ...options });
+
+/**
+ * Список типов встреч владельца, отсортированный по `id`.
+ */
+export const listOwnerMeetingTypes = <ThrowOnError extends boolean = false>(options?: Options<ListOwnerMeetingTypesData, ThrowOnError>): RequestResult<ListOwnerMeetingTypesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListOwnerMeetingTypesResponses, unknown, ThrowOnError>({ url: '/api/owner/v1/meeting-types', ...options });
+
+/**
+ * Создать тип встречи.
+ */
+export const createOwnerMeetingType = <ThrowOnError extends boolean = false>(options: Options<CreateOwnerMeetingTypeData, ThrowOnError>): RequestResult<CreateOwnerMeetingTypeResponses, CreateOwnerMeetingTypeErrors, ThrowOnError> => (options.client ?? client).post<CreateOwnerMeetingTypeResponses, CreateOwnerMeetingTypeErrors, ThrowOnError>({
+    url: '/api/owner/v1/meeting-types',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});

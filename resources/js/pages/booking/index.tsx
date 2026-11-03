@@ -1,44 +1,32 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { useQuery } from '@tanstack/react-query';
 import { listGuestMeetingTypesOptions } from '@/api/@tanstack/react-query.gen';
-import type { MeetingType } from '@/api/types.gen';
+import { AppLayout } from '@/layouts/app-layout';
+import { MeetingTypeCard } from '@/components/meeting-type-card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-    Card,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { home } from '@/routes';
 
 export default function BookingIndex() {
     return (
         <>
             <Head title="Запись на звонок" />
-            <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-6 bg-background p-6 text-foreground">
-                <header className="flex items-center justify-between gap-4">
+            <AppLayout>
+                <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-6">
                     <h1 className="text-3xl font-semibold">Запись на звонок</h1>
-                    <Link
-                        href={home()}
-                        className="text-primary underline-offset-4 hover:underline"
+                    <section
+                        aria-labelledby="meeting-types-heading"
+                        className="flex flex-col gap-4"
                     >
-                        На главную
-                    </Link>
-                </header>
-                <section
-                    aria-labelledby="meeting-types-heading"
-                    className="flex flex-col gap-4"
-                >
-                    <h2
-                        id="meeting-types-heading"
-                        className="text-xl font-medium"
-                    >
-                        Выберите тип встречи
-                    </h2>
-                    <MeetingTypeCatalog />
-                </section>
-            </main>
+                        <h2
+                            id="meeting-types-heading"
+                            className="text-xl font-medium"
+                        >
+                            Выберите тип встречи
+                        </h2>
+                        <MeetingTypeCatalog />
+                    </section>
+                </main>
+            </AppLayout>
         </>
     );
 }
@@ -78,22 +66,6 @@ function MeetingTypeCatalog() {
                 </li>
             ))}
         </ul>
-    );
-}
-
-function MeetingTypeCard({ meetingType }: { meetingType: MeetingType }) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{meetingType.name}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                    {meetingType.durationMinutes} мин
-                </p>
-                {meetingType.description !== null && (
-                    <CardDescription>{meetingType.description}</CardDescription>
-                )}
-            </CardHeader>
-        </Card>
     );
 }
 
