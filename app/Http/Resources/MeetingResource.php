@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Meeting;
+use App\Services\Booking\BookingRules;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,7 +22,7 @@ class MeetingResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $timezone = config()->string('owner.timezone');
+        $timezone = resolve(BookingRules::class)->timezone();
 
         return [
             'id' => $this->id,
