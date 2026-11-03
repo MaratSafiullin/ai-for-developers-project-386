@@ -11,6 +11,9 @@
 /resources/js/routes
 /resources/js/wayfinder
 /vendor
+/blob-report
+/playwright-report
+/test-results
 .DS_Store
 .env
 .env.backup

@@ -66,7 +66,9 @@ export default defineConfig({
         htmlWhitespaceSensitivity: 'css',
         ignorePatterns: [
             '.github/**',
+            '.release-please-manifest.json',
             'AGENTS.md',
+            'CHANGELOG.md',
             'boost.json',
             'composer.json',
             'contract/openapi.yaml',

@@ -92,6 +92,66 @@ model SlotCalendarEnvelope {
 }
 
 /**
+ * The meeting type of a meeting: the fields needed to show the meeting.
+ */
+model MeetingTypeSummary {
+    ...PickProperties<MeetingType, "id" | "name" | "durationMinutes">;
+}
+
+/**
+ * Meeting: a guest's confirmed booking of an interval for a meeting type.
+ * Times are ISO 8601 with the owner's time zone offset.
+ */
+model Meeting {
+    id: int32;
+    meetingTypeId: int32;
+
+    @minLength(1)
+    @maxLength(100)
+    guestName: string;
+
+    startsAt: offsetDateTime;
+    endsAt: offsetDateTime;
+    meetingType: MeetingTypeSummary;
+}
+
+/**
+ * A single meeting in a `data` envelope.
+ */
+model MeetingEnvelope {
+    data: Meeting;
+}
+
+/**
+ * Upcoming meetings of all types, nearest first.
+ */
+model MeetingList {
+    data: Meeting[];
+}
+
+/**
+ * Data for a booking: the meeting type, the start of a free slot, and the guest's name.
+ */
+model CreateMeetingRequest {
+    meetingTypeId: int32;
+    startsAt: offsetDateTime;
+
+    @minLength(1)
+    @maxLength(100)
+    guestName: string;
+}
+
+/**
+ * The requested time is already taken by another meeting.
+ */
+@error
+model SlotTakenError {
+    @statusCode statusCode: 409;
+    message: string;
+    code: "slot_taken";
+}
+
+/**
  * Resource not found.
  */
 @error
@@ -134,6 +194,17 @@ namespace Guest {
         | SlotCalendarEnvelope
         | NotFoundError
         | ValidationError;
+
+    /**
+     * Book a free slot. Overlapping another meeting of any type answers 409.
+     */
+    @route("/meetings")
+    @post
+    @operationId("createGuestMeeting")
+    op createMeeting(@body body: CreateMeetingRequest): {
+        @statusCode statusCode: 201;
+        @body body: MeetingEnvelope;
+    } | ValidationError | SlotTakenError;
 }
 
 /**
@@ -160,4 +231,12 @@ namespace Owner {
         @statusCode statusCode: 201;
         @body body: MeetingTypeEnvelope;
     } | ValidationError;
+
+    /**
+     * Meetings of all types that have not ended yet, sorted by `startsAt`, then by `id`.
+     */
+    @route("/meetings")
+    @get
+    @operationId("listOwnerMeetings")
+    op listMeetings(): MeetingList;
 }
