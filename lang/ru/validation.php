@@ -6,7 +6,7 @@
  */
 return [
 
-    'date_format' => 'Поле «:attribute» должно быть в формате :format.',
+    'date' => 'Поле «:attribute» должно быть существующей датой.',
     'exists' => 'Выбранное значение поля «:attribute» не найдено.',
     'integer' => 'Поле «:attribute» должно быть целым числом.',
     'max' => [
@@ -17,6 +17,7 @@ return [
         'numeric' => 'Поле «:attribute» должно быть не меньше :min.',
     ],
     'multiple_of' => 'Поле «:attribute» должно быть кратно :value.',
+    'regex' => 'Поле «:attribute» имеет неверный формат.',
     'required' => 'Заполните поле «:attribute».',
     'string' => 'Поле «:attribute» должно быть строкой.',
 

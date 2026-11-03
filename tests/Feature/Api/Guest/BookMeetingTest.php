@@ -96,6 +96,8 @@ test('guest gets a validation error for an invalid field', function (array $inva
     'name 101 characters' => [['guestName' => str_repeat('я', 101)], 'guestName'],
     'start not a date-time' => [['startsAt' => 'завтра в 10'], 'startsAt'],
     'start without an offset' => [['startsAt' => '2026-11-04T10:00:00'], 'startsAt'],
+    'start with an empty fraction' => [['startsAt' => '2026-11-04T10:00:00.+03:00'], 'startsAt'],
+    'start on a nonexistent date' => [['startsAt' => '2026-02-30T10:00:00+03:00'], 'startsAt'],
     'meeting type not an integer' => [['meetingTypeId' => 'abc'], 'meetingTypeId'],
 ]);
 
@@ -144,6 +146,7 @@ test('guest gets a validation error for a start that is not a bookable slot', fu
     'after the window' => ['2026-11-18T10:00:00+03:00'],
     'off the grid' => ['2026-11-04T10:10:00+03:00'],
     'with seconds' => ['2026-11-04T10:00:30+03:00'],
+    'with fractional seconds' => ['2026-11-04T10:00:00.5+03:00'],
     'before the working hours' => ['2026-11-04T08:45:00+03:00'],
     'ending after 18:00' => ['2026-11-04T17:45:00+03:00'],
 ]);
@@ -162,4 +165,7 @@ test('guest books the first and the last slots of the window', function (string 
     'first' => ['2026-11-04T09:00:00+03:00', '2026-11-04T09:00:00+03:00'],
     'last' => ['2026-11-17T17:30:00+03:00', '2026-11-17T17:30:00+03:00'],
     'last given in UTC' => ['2026-11-17T14:30:00+00:00', '2026-11-17T17:30:00+03:00'],
+    'last given in UTC with Z' => ['2026-11-17T14:30:00Z', '2026-11-17T17:30:00+03:00'],
+    'first with zero fractional seconds' => ['2026-11-04T09:00:00.000+03:00', '2026-11-04T09:00:00+03:00'],
+    'first with zero fractional seconds and Z' => ['2026-11-04T06:00:00.000000Z', '2026-11-04T09:00:00+03:00'],
 ]);

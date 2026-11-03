@@ -19,9 +19,12 @@ use Illuminate\Validation\Validator;
 class StoreMeetingRequest extends FormRequest
 {
     /**
-     * The format of `startsAt`: ISO 8601 with a time zone offset.
+     * The format of `startsAt`: an RFC 3339 date-time, as the contract's
+     * `offsetDateTime` allows. Fractional seconds are optional and the offset
+     * is either `Z` or `±HH:MM`. The `date` rule then rejects dates such as
+     * February 30 that the pattern lets through.
      */
-    private const string STARTS_AT_FORMAT = 'Y-m-d\TH:i:sP';
+    private const string STARTS_AT_PATTERN = '/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T([01]\d|2[0-3]):[0-5]\d:[0-5]\d(\.\d+)?(Z|[+-]([01]\d|2[0-3]):[0-5]\d)$/';
 
     private ?MeetingType $meetingType = null;
 
@@ -35,7 +38,7 @@ class StoreMeetingRequest extends FormRequest
         return [
             'guestName' => ['required', 'string', 'max:100'],
             'meetingTypeId' => ['bail', 'required', 'integer', 'max:2147483647', 'exists:meeting_types,id'],
-            'startsAt' => ['required', 'string', 'date_format:'.self::STARTS_AT_FORMAT],
+            'startsAt' => ['bail', 'required', 'string', 'regex:'.self::STARTS_AT_PATTERN, 'date'],
         ];
     }
 
@@ -74,8 +77,7 @@ class StoreMeetingRequest extends FormRequest
      */
     public function startsAt(): CarbonImmutable
     {
-        return CarbonImmutable::createFromFormat(self::STARTS_AT_FORMAT, $this->string('startsAt')->value())
-            ?: throw new \UnexpectedValueException('The start was not validated.');
+        return CarbonImmutable::parse($this->string('startsAt')->value());
     }
 
     /**
