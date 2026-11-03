@@ -64,7 +64,7 @@ cd ai-for-developers-project-386
 composer setup
 ```
 
-`composer setup` ставит PHP- и npm-зависимости, подключает git-хуки из `.githooks`, создаёт `.env` из `.env.example`, генерирует ключ приложения, применяет миграции к SQLite и собирает фронтенд.
+`composer setup` ставит PHP- и npm-зависимости, подключает git-хуки из `.githooks`, создаёт `.env` из `.env.example`, генерирует ключ приложения, применяет миграции к SQLite, ставит Chromium для e2e-тестов Playwright и собирает фронтенд.
 
 ## Использование
 
@@ -81,6 +81,7 @@ composer dev
 | `composer dev`      | запуск для разработки                             |
 | `npm run build`     | прод-сборка фронтенда в `public/build`            |
 | `php artisan test`  | тесты Pest                                        |
+| `npm run test:e2e`  | сборка фронтенда и e2e-сценарий в Playwright      |
 | `composer lint`     | автоформатирование PHP (Pint)                     |
 | `npm run check:fix` | автоисправление линтера и форматирование TS/React |
 | `composer ci:check` | все проверки разом (см. ниже)                     |
@@ -90,12 +91,18 @@ composer dev
 `composer ci:check` — единая команда проверок, локально и в CI:
 
 1. `npm run check`: линтер и форматтер Vite+ (предупреждения считаются ошибками)
-2. `npm run types:check`: проверка типов TypeScript
-3. `composer lint:check`: стиль PHP (Pint)
-4. `composer types:check`: статический анализ PHP (Larastan)
-5. `php artisan test`: тесты Pest
+2. `npm run contract:check`: OpenAPI и SDK пересобираются из `contract/main.tsp` и совпадают с закоммиченными
+3. `npm run types:check`: проверка типов TypeScript
+4. `composer lint:check`: стиль PHP (Pint)
+5. `composer types:check`: статический анализ PHP (Larastan)
+6. `php artisan test`: тесты Pest
+7. `npm run test:e2e`: сборка фронтенда и e2e-сценарий в Chromium через Playwright
 
-GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` и pull request выполняет `composer setup` и `composer ci:check`.
+e2e-тест (`tests/e2e/`) проходит [сценарий использования](#сценарий-использования) против настоящего сервера: владелец создаёт тип «Знакомство», гость выбирает первую дату и первый слот, вводит «Анна» и видит подтверждение, владелец видит встречу в списке предстоящих. Время и дата сверяются с выбранным слотом, а не с фиксированным временем. Перед прогоном Playwright (`playwright.config.ts`) пересоздаёт файл SQLite `database/e2e.sqlite`, применяет к нему миграции без сидера и запускает `php artisan serve` на порту 8010. Рабочая база из `.env` не затрагивается. Конфликты слотов и граничные случаи проверяют тесты Pest, в e2e они не повторяются.
+
+Если Chromium не установлен (например, на клоне, где `composer setup` выполнялся раньше), поставьте его: `npx playwright install chromium`. При падении трейс прогона сохраняется в `test-results/` и открывается командой `npx playwright show-trace <путь к trace.zip>`.
+
+GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` и pull request выполняет `composer setup`, ставит системные зависимости Chromium (`npx playwright install --with-deps chromium`) и запускает `composer ci:check`.
 
 Коммиты пишутся по [Conventional Commits](https://www.conventionalcommits.org/ru/v1.0.0/): тип и scope на английском, описание на русском в инфинитиве, например `feat(api): добавить календарь свободных слотов`. Формат проверяет хук `.githooks/commit-msg`. На клоне, где `composer setup` уже выполнялся до появления хука, подключите его один раз: `git config core.hooksPath .githooks`.
 
