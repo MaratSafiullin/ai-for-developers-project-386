@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { toast } from 'sonner';
 import {
@@ -10,11 +11,19 @@ import {
 } from '@/api/@tanstack/react-query.gen';
 import type { ValidationError } from '@/api/types.gen';
 import { AppLayout } from '@/layouts/app-layout';
+import { formatDuration } from '@/lib/duration';
 import { MeetingTypeCard } from '@/components/meeting-type-card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -65,7 +74,20 @@ function textField(formData: FormData, name: string): string {
     return typeof value === 'string' ? value : '';
 }
 
+/**
+ * Durations allowed by the contract: 15 to 240 minutes in steps of 15.
+ */
+const durationOptionsMinutes = Array.from(
+    { length: 16 },
+    (_, index) => (index + 1) * 15,
+);
+
+const defaultDurationMinutes = '30';
+
 function CreateMeetingTypeForm() {
+    const [durationMinutes, setDurationMinutes] = useState(
+        defaultDurationMinutes,
+    );
     const queryClient = useQueryClient();
     const { mutate, isPending, error } = useMutation({
         ...createOwnerMeetingTypeMutation(),
@@ -93,14 +115,13 @@ function CreateMeetingTypeForm() {
                 body: {
                     name: textField(formData, 'name'),
                     description: textField(formData, 'description'),
-                    durationMinutes: Number(
-                        textField(formData, 'durationMinutes'),
-                    ),
+                    durationMinutes: Number(durationMinutes),
                 },
             },
             {
                 onSuccess: () => {
                     form.reset();
+                    setDurationMinutes(defaultDurationMinutes);
                     toast.success('Тип встречи создан');
                 },
             },
@@ -140,17 +161,34 @@ function CreateMeetingTypeForm() {
             />
             <FormField
                 id="durationMinutes"
-                label="Длительность, минут"
+                label="Длительность"
                 errors={fieldErrors.durationMinutes}
                 control={(describedBy) => (
-                    <Input
-                        id="durationMinutes"
+                    <Select
                         name="durationMinutes"
-                        inputMode="numeric"
                         required
-                        aria-invalid={describedBy !== undefined}
-                        aria-describedby={describedBy}
-                    />
+                        value={durationMinutes}
+                        onValueChange={setDurationMinutes}
+                    >
+                        <SelectTrigger
+                            id="durationMinutes"
+                            className="w-48"
+                            aria-invalid={describedBy !== undefined}
+                            aria-describedby={describedBy}
+                        >
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {durationOptionsMinutes.map((minutes) => (
+                                <SelectItem
+                                    key={minutes}
+                                    value={String(minutes)}
+                                >
+                                    {formatDuration(minutes)}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 )}
             />
             {error !== null && !isValidationError(error) && (

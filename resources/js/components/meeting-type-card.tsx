@@ -5,6 +5,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { formatDuration } from '@/lib/duration';
 
 export function MeetingTypeCard({ meetingType }: { meetingType: MeetingType }) {
     return (
@@ -12,7 +13,7 @@ export function MeetingTypeCard({ meetingType }: { meetingType: MeetingType }) {
             <CardHeader>
                 <CardTitle>{meetingType.name}</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                    {meetingType.durationMinutes} мин
+                    {formatDuration(meetingType.durationMinutes)}
                 </p>
                 {meetingType.description !== null && (
                     <CardDescription>{meetingType.description}</CardDescription>
