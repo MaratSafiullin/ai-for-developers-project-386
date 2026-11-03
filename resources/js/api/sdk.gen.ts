@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateOwnerMeetingTypeData, CreateOwnerMeetingTypeErrors, CreateOwnerMeetingTypeResponses, ListGuestMeetingTypesData, ListGuestMeetingTypesResponses, ListGuestSlotsData, ListGuestSlotsErrors, ListGuestSlotsResponses, ListOwnerMeetingTypesData, ListOwnerMeetingTypesResponses } from './types.gen';
+import type { CreateGuestMeetingData, CreateGuestMeetingErrors, CreateGuestMeetingResponses, CreateOwnerMeetingTypeData, CreateOwnerMeetingTypeErrors, CreateOwnerMeetingTypeResponses, ListGuestMeetingTypesData, ListGuestMeetingTypesResponses, ListGuestSlotsData, ListGuestSlotsErrors, ListGuestSlotsResponses, ListOwnerMeetingTypesData, ListOwnerMeetingTypesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -22,6 +22,18 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * Meeting type catalog sorted by `id`.
  */
 export const listGuestMeetingTypes = <ThrowOnError extends boolean = false>(options?: Options<ListGuestMeetingTypesData, ThrowOnError>): RequestResult<ListGuestMeetingTypesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListGuestMeetingTypesResponses, unknown, ThrowOnError>({ url: '/api/guest/v1/meeting-types', ...options });
+
+/**
+ * Book a free slot. Overlapping another meeting of any type answers 409.
+ */
+export const createGuestMeeting = <ThrowOnError extends boolean = false>(options: Options<CreateGuestMeetingData, ThrowOnError>): RequestResult<CreateGuestMeetingResponses, CreateGuestMeetingErrors, ThrowOnError> => (options.client ?? client).post<CreateGuestMeetingResponses, CreateGuestMeetingErrors, ThrowOnError>({
+    url: '/api/guest/v1/meetings',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
 
 /**
  * Free slots of a meeting type for the 14 booking window dates, starting tomorrow.

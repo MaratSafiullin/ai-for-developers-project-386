@@ -6,6 +6,8 @@
  */
 return [
 
+    'date_format' => 'Поле «:attribute» должно быть в формате :format.',
+    'exists' => 'Выбранное значение поля «:attribute» не найдено.',
     'integer' => 'Поле «:attribute» должно быть целым числом.',
     'max' => [
         'numeric' => 'Поле «:attribute» должно быть не больше :max.',
@@ -23,6 +25,8 @@ return [
         'description' => 'Описание',
         'durationMinutes' => 'Длительность',
         'meetingTypeId' => 'Тип встречи',
+        'guestName' => 'Имя',
+        'startsAt' => 'Время',
     ],
 
 ];

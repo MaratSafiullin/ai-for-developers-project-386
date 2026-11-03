@@ -5,12 +5,41 @@ export type ClientOptions = {
 };
 
 /**
+ * Data for a booking: the meeting type, the start of a free slot, and the guest's name.
+ */
+export type CreateMeetingRequest = {
+    meetingTypeId: number;
+    startsAt: string;
+    guestName: string;
+};
+
+/**
  * Data for a new meeting type. An empty description is stored as `null`.
  */
 export type CreateMeetingTypeRequest = {
     name: string;
     durationMinutes: number;
     description?: string | null;
+};
+
+/**
+ * Meeting: a guest's confirmed booking of an interval for a meeting type.
+ * Times are ISO 8601 with the owner's time zone offset.
+ */
+export type Meeting = {
+    id: number;
+    meetingTypeId: number;
+    guestName: string;
+    startsAt: string;
+    endsAt: string;
+    meetingType: MeetingTypeSummary;
+};
+
+/**
+ * A single meeting in a `data` envelope.
+ */
+export type MeetingEnvelope = {
+    data: Meeting;
 };
 
 /**
@@ -35,6 +64,15 @@ export type MeetingTypeEnvelope = {
  */
 export type MeetingTypeList = {
     data: Array<MeetingType>;
+};
+
+/**
+ * The meeting type of a meeting: the fields needed to show the meeting.
+ */
+export type MeetingTypeSummary = {
+    id: number;
+    name: string;
+    durationMinutes: number;
 };
 
 /**
@@ -81,6 +119,14 @@ export type SlotDay = {
 };
 
 /**
+ * The requested time is already taken by another meeting.
+ */
+export type SlotTakenError = {
+    message: string;
+    code: 'slot_taken';
+};
+
+/**
  * Invalid data: messages are grouped by request field.
  */
 export type ValidationError = {
@@ -105,6 +151,35 @@ export type ListGuestMeetingTypesResponses = {
 };
 
 export type ListGuestMeetingTypesResponse = ListGuestMeetingTypesResponses[keyof ListGuestMeetingTypesResponses];
+
+export type CreateGuestMeetingData = {
+    body: CreateMeetingRequest;
+    path?: never;
+    query?: never;
+    url: '/api/guest/v1/meetings';
+};
+
+export type CreateGuestMeetingErrors = {
+    /**
+     * The requested time is already taken by another meeting.
+     */
+    409: SlotTakenError;
+    /**
+     * Invalid data: messages are grouped by request field.
+     */
+    422: ValidationError;
+};
+
+export type CreateGuestMeetingError = CreateGuestMeetingErrors[keyof CreateGuestMeetingErrors];
+
+export type CreateGuestMeetingResponses = {
+    /**
+     * The request has succeeded and a new resource has been created as a result.
+     */
+    201: MeetingEnvelope;
+};
+
+export type CreateGuestMeetingResponse = CreateGuestMeetingResponses[keyof CreateGuestMeetingResponses];
 
 export type ListGuestSlotsData = {
     body?: never;

@@ -80,6 +80,28 @@ class BookingRules
     }
 
     /**
+     * Determine whether a meeting of the given duration may start at the
+     * moment: on a booking window date, on the grid, and ending within the
+     * working hours. Occupancy is not checked here.
+     */
+    public function isBookableStart(CarbonImmutable $startsAt, int $durationMinutes): bool
+    {
+        $localStartsAt = $startsAt->setTimezone($this->timezone());
+
+        if ($localStartsAt < $this->windowStart() || $localStartsAt >= $this->windowEnd()) {
+            return false;
+        }
+
+        foreach ($this->gridSlotsOn($localStartsAt->startOfDay(), $durationMinutes) as $slot) {
+            if ($slot->startsAt->equalTo($localStartsAt)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get the number of dates in the booking window.
      */
     private function windowDays(): int

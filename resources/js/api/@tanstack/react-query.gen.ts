@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { createOwnerMeetingType, listGuestMeetingTypes, listGuestSlots, listOwnerMeetingTypes, type Options } from '../sdk.gen';
-import type { CreateOwnerMeetingTypeData, CreateOwnerMeetingTypeError, CreateOwnerMeetingTypeResponse, ListGuestMeetingTypesData, ListGuestMeetingTypesResponse, ListGuestSlotsData, ListGuestSlotsError, ListGuestSlotsResponse, ListOwnerMeetingTypesData, ListOwnerMeetingTypesResponse } from '../types.gen';
+import { createGuestMeeting, createOwnerMeetingType, listGuestMeetingTypes, listGuestSlots, listOwnerMeetingTypes, type Options } from '../sdk.gen';
+import type { CreateGuestMeetingData, CreateGuestMeetingError, CreateGuestMeetingResponse, CreateOwnerMeetingTypeData, CreateOwnerMeetingTypeError, CreateOwnerMeetingTypeResponse, ListGuestMeetingTypesData, ListGuestMeetingTypesResponse, ListGuestSlotsData, ListGuestSlotsError, ListGuestSlotsResponse, ListOwnerMeetingTypesData, ListOwnerMeetingTypesResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -56,6 +56,23 @@ export const listGuestMeetingTypesOptions = (options?: Options<ListGuestMeetingT
     },
     queryKey: listGuestMeetingTypesQueryKey(options)
 });
+
+/**
+ * Book a free slot. Overlapping another meeting of any type answers 409.
+ */
+export const createGuestMeetingMutation = (options?: Partial<Options<CreateGuestMeetingData>>): UseMutationOptions<CreateGuestMeetingResponse, CreateGuestMeetingError, Options<CreateGuestMeetingData>> => {
+    const mutationOptions: UseMutationOptions<CreateGuestMeetingResponse, CreateGuestMeetingError, Options<CreateGuestMeetingData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createGuestMeeting({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
 
 export const listGuestSlotsQueryKey = (options: Options<ListGuestSlotsData>) => createQueryKey('listGuestSlots', options);
 
