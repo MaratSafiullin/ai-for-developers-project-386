@@ -1,12 +1,33 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { useQuery } from '@tanstack/react-query';
-import { listGuestMeetingTypesOptions } from '@/api/@tanstack/react-query.gen';
+import { useState } from 'react';
+import {
+    listGuestMeetingTypesOptions,
+    listGuestSlotsOptions,
+} from '@/api/@tanstack/react-query.gen';
+import type { Slot } from '@/api/types.gen';
 import { AppLayout } from '@/layouts/app-layout';
+import { formatCalendarDate, formatTime } from '@/lib/date-time';
 import { MeetingTypeCard } from '@/components/meeting-type-card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function BookingIndex() {
+    const [selectedMeetingTypeId, setSelectedMeetingTypeId] = useState<
+        number | null
+    >(null);
+    const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
+
+    function selectMeetingType(meetingTypeId: number) {
+        if (meetingTypeId === selectedMeetingTypeId) {
+            return;
+        }
+
+        setSelectedMeetingTypeId(meetingTypeId);
+        setSelectedSlot(null);
+    }
+
     return (
         <>
             <Head title="Запись на звонок" />
@@ -23,15 +44,43 @@ export default function BookingIndex() {
                         >
                             Выберите тип встречи
                         </h2>
-                        <MeetingTypeCatalog />
+                        <MeetingTypeCatalog
+                            selectedMeetingTypeId={selectedMeetingTypeId}
+                            onSelect={selectMeetingType}
+                        />
                     </section>
+                    {selectedMeetingTypeId !== null && (
+                        <section
+                            aria-labelledby="slots-heading"
+                            className="flex flex-col gap-4"
+                        >
+                            <h2
+                                id="slots-heading"
+                                className="text-xl font-medium"
+                            >
+                                Выберите время
+                            </h2>
+                            <SlotPicker
+                                key={selectedMeetingTypeId}
+                                meetingTypeId={selectedMeetingTypeId}
+                                selectedSlot={selectedSlot}
+                                onSelect={setSelectedSlot}
+                            />
+                        </section>
+                    )}
                 </main>
             </AppLayout>
         </>
     );
 }
 
-function MeetingTypeCatalog() {
+function MeetingTypeCatalog({
+    selectedMeetingTypeId,
+    onSelect,
+}: {
+    selectedMeetingTypeId: number | null;
+    onSelect: (meetingTypeId: number) => void;
+}) {
     const { data, isPending, isError } = useQuery(
         listGuestMeetingTypesOptions(),
     );
@@ -60,11 +109,29 @@ function MeetingTypeCatalog() {
 
     return (
         <ul className="flex flex-col gap-3">
-            {data.data.map((meetingType) => (
-                <li key={meetingType.id}>
-                    <MeetingTypeCard meetingType={meetingType} />
-                </li>
-            ))}
+            {data.data.map((meetingType) => {
+                const isSelected = meetingType.id === selectedMeetingTypeId;
+
+                return (
+                    <li key={meetingType.id}>
+                        <button
+                            type="button"
+                            aria-pressed={isSelected}
+                            onClick={() => onSelect(meetingType.id)}
+                            className="w-full rounded-xl text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                        >
+                            <MeetingTypeCard
+                                meetingType={meetingType}
+                                className={
+                                    isSelected
+                                        ? 'border-primary ring-1 ring-primary'
+                                        : 'hover:bg-accent'
+                                }
+                            />
+                        </button>
+                    </li>
+                );
+            })}
         </ul>
     );
 }
@@ -79,6 +146,131 @@ function MeetingTypeCatalogSkeleton() {
             {[0, 1, 2].map((index) => (
                 <Skeleton key={index} className="h-24 w-full" />
             ))}
+        </div>
+    );
+}
+
+/**
+ * Dates of the booking window and the free slots of the chosen date. Mounted
+ * with the meeting type as its key, so a type change starts from scratch.
+ */
+function SlotPicker({
+    meetingTypeId,
+    selectedSlot,
+    onSelect,
+}: {
+    meetingTypeId: number;
+    selectedSlot: Slot | null;
+    onSelect: (slot: Slot) => void;
+}) {
+    const { timezone } = usePage().props;
+    const [chosenDate, setChosenDate] = useState<string | null>(null);
+    const { data, isPending, isError } = useQuery(
+        listGuestSlotsOptions({ query: { meetingTypeId } }),
+    );
+
+    if (isPending) {
+        return <SlotPickerSkeleton />;
+    }
+
+    if (isError) {
+        return (
+            <Alert variant="destructive">
+                <AlertDescription>
+                    Не удалось загрузить свободное время. Обновите страницу.
+                </AlertDescription>
+            </Alert>
+        );
+    }
+
+    const { days } = data.data;
+    const activeDate =
+        chosenDate ??
+        days.find((day) => day.slots.length > 0)?.date ??
+        days[0]?.date;
+    const activeDay = days.find((day) => day.date === activeDate);
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div
+                role="group"
+                aria-label="Дата"
+                className="flex flex-wrap gap-2"
+            >
+                {days.map((day) => {
+                    const isActive = day.date === activeDate;
+
+                    return (
+                        <Button
+                            key={day.date}
+                            type="button"
+                            size="sm"
+                            variant={isActive ? 'default' : 'outline'}
+                            aria-pressed={isActive}
+                            onClick={() => setChosenDate(day.date)}
+                            className={
+                                day.slots.length === 0 && !isActive
+                                    ? 'text-muted-foreground'
+                                    : undefined
+                            }
+                        >
+                            {formatCalendarDate(day.date)}
+                        </Button>
+                    );
+                })}
+            </div>
+            {activeDay === undefined || activeDay.slots.length === 0 ? (
+                <p className="text-muted-foreground">
+                    На эту дату свободного времени нет. Выберите другую дату.
+                </p>
+            ) : (
+                <div
+                    role="group"
+                    aria-label="Время"
+                    className="grid grid-cols-3 gap-2 sm:grid-cols-5"
+                >
+                    {activeDay.slots.map((slot) => {
+                        const isSelected =
+                            slot.startsAt === selectedSlot?.startsAt;
+
+                        return (
+                            <Button
+                                key={slot.startsAt}
+                                type="button"
+                                variant={isSelected ? 'default' : 'outline'}
+                                aria-pressed={isSelected}
+                                onClick={() => onSelect(slot)}
+                            >
+                                {formatTime(slot.startsAt, timezone)}
+                            </Button>
+                        );
+                    })}
+                </div>
+            )}
+            <p className="text-sm text-muted-foreground">
+                Время указано по часовому поясу {timezone}.
+            </p>
+        </div>
+    );
+}
+
+function SlotPickerSkeleton() {
+    return (
+        <div
+            className="flex flex-col gap-4"
+            aria-busy="true"
+            aria-label="Загрузка свободного времени"
+        >
+            <div className="flex flex-wrap gap-2">
+                {Array.from({ length: 14 }, (_, index) => (
+                    <Skeleton key={index} className="h-8 w-24" />
+                ))}
+            </div>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                {Array.from({ length: 10 }, (_, index) => (
+                    <Skeleton key={index} className="h-9" />
+                ))}
+            </div>
         </div>
     );
 }

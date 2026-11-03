@@ -55,6 +55,52 @@ model CreateMeetingTypeRequest {
 }
 
 /**
+ * Слот: свободный интервал длиной в длительность типа встречи.
+ * Время в ISO 8601 со смещением часового пояса владельца.
+ */
+model Slot {
+    startsAt: offsetDateTime;
+    endsAt: offsetDateTime;
+}
+
+/**
+ * Дата окна записи по поясу владельца и её свободные слоты по возрастанию.
+ * Дни без свободных слотов приходят с пустым списком.
+ */
+model SlotDay {
+    date: plainDate;
+    slots: Slot[];
+}
+
+/**
+ * Свободные слоты типа встречи на все даты окна записи.
+ */
+model SlotCalendar {
+    /**
+     * Часовой пояс владельца, например `Europe/Moscow`.
+     */
+    timezone: string;
+
+    days: SlotDay[];
+}
+
+/**
+ * Свободные слоты в конверте `data`.
+ */
+model SlotCalendarEnvelope {
+    data: SlotCalendar;
+}
+
+/**
+ * Ресурс не найден.
+ */
+@error
+model NotFoundError {
+    @statusCode statusCode: 404;
+    message: string;
+}
+
+/**
  * Ошибка данных: сообщения сгруппированы по полям запроса.
  */
 @error
@@ -77,6 +123,17 @@ namespace Guest {
     @get
     @operationId("listGuestMeetingTypes")
     op listMeetingTypes(): MeetingTypeList;
+
+    /**
+     * Свободные слоты типа встречи на 14 дат окна записи, начиная с завтрашней.
+     */
+    @route("/slots")
+    @get
+    @operationId("listGuestSlots")
+    op listSlots(@query meetingTypeId: int32):
+        | SlotCalendarEnvelope
+        | NotFoundError
+        | ValidationError;
 }
 
 /**

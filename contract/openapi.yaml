@@ -21,6 +21,39 @@ paths:
                 $ref: '#/components/schemas/MeetingTypeList'
       tags:
         - guest
+  /api/guest/v1/slots:
+    get:
+      operationId: listGuestSlots
+      description: Свободные слоты типа встречи на 14 дат окна записи, начиная с завтрашней.
+      parameters:
+        - name: meetingTypeId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotCalendarEnvelope'
+        '404':
+          description: Ресурс не найден.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '422':
+          description: 'Ошибка данных: сообщения сгруппированы по полям запроса.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+      tags:
+        - guest
   /api/owner/v1/meeting-types:
     get:
       operationId: listOwnerMeetingTypes
@@ -127,6 +160,67 @@ components:
           items:
             $ref: '#/components/schemas/MeetingType'
       description: Каталог типов встреч в порядке создания.
+    NotFoundError:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+      description: Ресурс не найден.
+    Slot:
+      type: object
+      required:
+        - startsAt
+        - endsAt
+      properties:
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+      description: |-
+        Слот: свободный интервал длиной в длительность типа встречи.
+        Время в ISO 8601 со смещением часового пояса владельца.
+    SlotCalendar:
+      type: object
+      required:
+        - timezone
+        - days
+      properties:
+        timezone:
+          type: string
+          description: Часовой пояс владельца, например `Europe/Moscow`.
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/SlotDay'
+      description: Свободные слоты типа встречи на все даты окна записи.
+    SlotCalendarEnvelope:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/SlotCalendar'
+      description: Свободные слоты в конверте `data`.
+    SlotDay:
+      type: object
+      required:
+        - date
+        - slots
+      properties:
+        date:
+          type: string
+          format: date
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/Slot'
+      description: |-
+        Дата окна записи по поясу владельца и её свободные слоты по возрастанию.
+        Дни без свободных слотов приходят с пустым списком.
     ValidationError:
       type: object
       required:
