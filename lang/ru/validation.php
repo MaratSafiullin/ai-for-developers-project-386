@@ -22,6 +22,7 @@ return [
         'name' => 'Название',
         'description' => 'Описание',
         'durationMinutes' => 'Длительность',
+        'meetingTypeId' => 'Тип встречи',
     ],
 
 ];

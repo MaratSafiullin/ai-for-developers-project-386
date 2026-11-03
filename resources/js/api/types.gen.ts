@@ -38,6 +38,49 @@ export type MeetingTypeList = {
 };
 
 /**
+ * Ресурс не найден.
+ */
+export type NotFoundError = {
+    message: string;
+};
+
+/**
+ * Слот: свободный интервал длиной в длительность типа встречи.
+ * Время в ISO 8601 со смещением часового пояса владельца.
+ */
+export type Slot = {
+    startsAt: string;
+    endsAt: string;
+};
+
+/**
+ * Свободные слоты типа встречи на все даты окна записи.
+ */
+export type SlotCalendar = {
+    /**
+     * Часовой пояс владельца, например `Europe/Moscow`.
+     */
+    timezone: string;
+    days: Array<SlotDay>;
+};
+
+/**
+ * Свободные слоты в конверте `data`.
+ */
+export type SlotCalendarEnvelope = {
+    data: SlotCalendar;
+};
+
+/**
+ * Дата окна записи по поясу владельца и её свободные слоты по возрастанию.
+ * Дни без свободных слотов приходят с пустым списком.
+ */
+export type SlotDay = {
+    date: string;
+    slots: Array<Slot>;
+};
+
+/**
  * Ошибка данных: сообщения сгруппированы по полям запроса.
  */
 export type ValidationError = {
@@ -62,6 +105,37 @@ export type ListGuestMeetingTypesResponses = {
 };
 
 export type ListGuestMeetingTypesResponse = ListGuestMeetingTypesResponses[keyof ListGuestMeetingTypesResponses];
+
+export type ListGuestSlotsData = {
+    body?: never;
+    path?: never;
+    query: {
+        meetingTypeId: number;
+    };
+    url: '/api/guest/v1/slots';
+};
+
+export type ListGuestSlotsErrors = {
+    /**
+     * Ресурс не найден.
+     */
+    404: NotFoundError;
+    /**
+     * Ошибка данных: сообщения сгруппированы по полям запроса.
+     */
+    422: ValidationError;
+};
+
+export type ListGuestSlotsError = ListGuestSlotsErrors[keyof ListGuestSlotsErrors];
+
+export type ListGuestSlotsResponses = {
+    /**
+     * The request has succeeded.
+     */
+    200: SlotCalendarEnvelope;
+};
+
+export type ListGuestSlotsResponse = ListGuestSlotsResponses[keyof ListGuestSlotsResponses];
 
 export type ListOwnerMeetingTypesData = {
     body?: never;

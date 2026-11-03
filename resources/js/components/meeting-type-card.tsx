@@ -7,9 +7,15 @@ import {
 } from '@/components/ui/card';
 import { formatDuration } from '@/lib/duration';
 
-export function MeetingTypeCard({ meetingType }: { meetingType: MeetingType }) {
+export function MeetingTypeCard({
+    meetingType,
+    className,
+}: {
+    meetingType: MeetingType;
+    className?: string;
+}) {
     return (
-        <Card>
+        <Card className={className}>
             <CardHeader>
                 <CardTitle>{meetingType.name}</CardTitle>
                 <p className="text-sm text-muted-foreground">

@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { createOwnerMeetingType, listGuestMeetingTypes, listOwnerMeetingTypes, type Options } from '../sdk.gen';
-import type { CreateOwnerMeetingTypeData, CreateOwnerMeetingTypeError, CreateOwnerMeetingTypeResponse, ListGuestMeetingTypesData, ListGuestMeetingTypesResponse, ListOwnerMeetingTypesData, ListOwnerMeetingTypesResponse } from '../types.gen';
+import { createOwnerMeetingType, listGuestMeetingTypes, listGuestSlots, listOwnerMeetingTypes, type Options } from '../sdk.gen';
+import type { CreateOwnerMeetingTypeData, CreateOwnerMeetingTypeError, CreateOwnerMeetingTypeResponse, ListGuestMeetingTypesData, ListGuestMeetingTypesResponse, ListGuestSlotsData, ListGuestSlotsError, ListGuestSlotsResponse, ListOwnerMeetingTypesData, ListOwnerMeetingTypesResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -55,6 +55,24 @@ export const listGuestMeetingTypesOptions = (options?: Options<ListGuestMeetingT
         return data;
     },
     queryKey: listGuestMeetingTypesQueryKey(options)
+});
+
+export const listGuestSlotsQueryKey = (options: Options<ListGuestSlotsData>) => createQueryKey('listGuestSlots', options);
+
+/**
+ * Свободные слоты типа встречи на 14 дат окна записи, начиная с завтрашней.
+ */
+export const listGuestSlotsOptions = (options: Options<ListGuestSlotsData>) => queryOptions<ListGuestSlotsResponse, ListGuestSlotsError, ListGuestSlotsResponse, ReturnType<typeof listGuestSlotsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listGuestSlots({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listGuestSlotsQueryKey(options)
 });
 
 export const listOwnerMeetingTypesQueryKey = (options?: Options<ListOwnerMeetingTypesData>) => createQueryKey('listOwnerMeetingTypes', options);

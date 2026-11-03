@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateOwnerMeetingTypeData, CreateOwnerMeetingTypeErrors, CreateOwnerMeetingTypeResponses, ListGuestMeetingTypesData, ListGuestMeetingTypesResponses, ListOwnerMeetingTypesData, ListOwnerMeetingTypesResponses } from './types.gen';
+import type { CreateOwnerMeetingTypeData, CreateOwnerMeetingTypeErrors, CreateOwnerMeetingTypeResponses, ListGuestMeetingTypesData, ListGuestMeetingTypesResponses, ListGuestSlotsData, ListGuestSlotsErrors, ListGuestSlotsResponses, ListOwnerMeetingTypesData, ListOwnerMeetingTypesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -22,6 +22,11 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * Каталог типов встреч, отсортированный по `id`.
  */
 export const listGuestMeetingTypes = <ThrowOnError extends boolean = false>(options?: Options<ListGuestMeetingTypesData, ThrowOnError>): RequestResult<ListGuestMeetingTypesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListGuestMeetingTypesResponses, unknown, ThrowOnError>({ url: '/api/guest/v1/meeting-types', ...options });
+
+/**
+ * Свободные слоты типа встречи на 14 дат окна записи, начиная с завтрашней.
+ */
+export const listGuestSlots = <ThrowOnError extends boolean = false>(options: Options<ListGuestSlotsData, ThrowOnError>): RequestResult<ListGuestSlotsResponses, ListGuestSlotsErrors, ThrowOnError> => (options.client ?? client).get<ListGuestSlotsResponses, ListGuestSlotsErrors, ThrowOnError>({ url: '/api/guest/v1/slots', ...options });
 
 /**
  * Список типов встреч владельца, отсортированный по `id`.
