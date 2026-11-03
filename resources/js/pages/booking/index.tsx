@@ -53,6 +53,7 @@ export default function BookingIndex() {
 
         setSelectedMeetingTypeId(meetingTypeId);
         setSelectedSlot(null);
+        setSlotNotice(null);
     }
 
     function refetchSlots(meetingTypeId: number) {
