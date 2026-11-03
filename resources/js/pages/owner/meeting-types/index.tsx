@@ -14,6 +14,7 @@ import { isValidationError } from '@/lib/api-errors';
 import { formatDuration } from '@/lib/duration';
 import { FormField } from '@/components/form-field';
 import { MeetingTypeCard } from '@/components/meeting-type-card';
+import { OwnerNav } from '@/components/owner-nav';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +34,7 @@ export default function OwnerMeetingTypesIndex() {
             <Head title="Типы встреч" />
             <AppLayout>
                 <main className="mx-auto flex w-full max-w-2xl flex-col gap-8 p-6">
+                    <OwnerNav />
                     <h1 className="text-3xl font-semibold">Типы встреч</h1>
                     <section
                         aria-labelledby="create-meeting-type-heading"

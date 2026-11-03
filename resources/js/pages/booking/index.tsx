@@ -7,6 +7,7 @@ import {
     listGuestMeetingTypesOptions,
     listGuestSlotsOptions,
     listGuestSlotsQueryKey,
+    listOwnerMeetingsQueryKey,
 } from '@/api/@tanstack/react-query.gen';
 import type { Meeting, Slot } from '@/api/types.gen';
 import { AppLayout } from '@/layouts/app-layout';
@@ -82,6 +83,9 @@ export default function BookingIndex() {
                 onSuccess: (response) => {
                     setBookedMeeting(response.data);
                     refetchSlots(meetingTypeId);
+                    void queryClient.invalidateQueries({
+                        queryKey: listOwnerMeetingsQueryKey(),
+                    });
                 },
                 onError: (bookingError) => {
                     const isSlotUnavailable =
