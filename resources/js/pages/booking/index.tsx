@@ -1,23 +1,49 @@
 import { Head, usePage } from '@inertiajs/react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import {
+    createGuestMeetingMutation,
     listGuestMeetingTypesOptions,
     listGuestSlotsOptions,
+    listGuestSlotsQueryKey,
 } from '@/api/@tanstack/react-query.gen';
-import type { Slot } from '@/api/types.gen';
+import type { Meeting, Slot } from '@/api/types.gen';
 import { AppLayout } from '@/layouts/app-layout';
-import { formatCalendarDate, formatTime } from '@/lib/date-time';
+import { isSlotTakenError, isValidationError } from '@/lib/api-errors';
+import { formatCalendarDate, formatDate, formatTime } from '@/lib/date-time';
+import { FormField } from '@/components/form-field';
 import { MeetingTypeCard } from '@/components/meeting-type-card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function BookingIndex() {
+    const [guestName, setGuestName] = useState('');
     const [selectedMeetingTypeId, setSelectedMeetingTypeId] = useState<
         number | null
     >(null);
     const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
+    const [slotNotice, setSlotNotice] = useState<string | null>(null);
+    const [bookedMeeting, setBookedMeeting] = useState<Meeting | null>(null);
+    const queryClient = useQueryClient();
+    const { mutate, isPending, error, reset } = useMutation(
+        createGuestMeetingMutation(),
+    );
+
+    const fieldErrors = isValidationError(error) ? error.errors : {};
+    const canBook =
+        guestName.trim() !== '' &&
+        selectedMeetingTypeId !== null &&
+        selectedSlot !== null;
 
     function selectMeetingType(meetingTypeId: number) {
         if (meetingTypeId === selectedMeetingTypeId) {
@@ -28,49 +54,203 @@ export default function BookingIndex() {
         setSelectedSlot(null);
     }
 
+    function refetchSlots(meetingTypeId: number) {
+        void queryClient.invalidateQueries({
+            queryKey: listGuestSlotsQueryKey({ query: { meetingTypeId } }),
+        });
+    }
+
+    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        if (selectedMeetingTypeId === null || selectedSlot === null) {
+            return;
+        }
+
+        const meetingTypeId = selectedMeetingTypeId;
+        setSlotNotice(null);
+
+        mutate(
+            {
+                body: {
+                    meetingTypeId,
+                    startsAt: selectedSlot.startsAt,
+                    guestName,
+                },
+            },
+            {
+                onSuccess: (response) => {
+                    setBookedMeeting(response.data);
+                    refetchSlots(meetingTypeId);
+                },
+                onError: (bookingError) => {
+                    const isSlotUnavailable =
+                        isSlotTakenError(bookingError) ||
+                        (isValidationError(bookingError) &&
+                            bookingError.errors.startsAt !== undefined);
+
+                    if (isSlotUnavailable) {
+                        setSlotNotice(bookingError.message);
+                        setSelectedSlot(null);
+                        refetchSlots(meetingTypeId);
+                    }
+                },
+            },
+        );
+    }
+
+    function startOver() {
+        reset();
+        setGuestName('');
+        setSelectedMeetingTypeId(null);
+        setSelectedSlot(null);
+        setSlotNotice(null);
+        setBookedMeeting(null);
+    }
+
+    if (bookedMeeting !== null) {
+        return (
+            <BookingPage>
+                <BookingConfirmation
+                    meeting={bookedMeeting}
+                    onDismiss={startOver}
+                />
+            </BookingPage>
+        );
+    }
+
+    return (
+        <BookingPage>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                {slotNotice !== null && (
+                    <Alert variant="destructive">
+                        <AlertDescription>{slotNotice}</AlertDescription>
+                    </Alert>
+                )}
+                <FormField
+                    id="guestName"
+                    label="Ваше имя"
+                    errors={fieldErrors.guestName}
+                    control={(describedBy) => (
+                        <Input
+                            id="guestName"
+                            name="guestName"
+                            required
+                            maxLength={100}
+                            autoComplete="name"
+                            value={guestName}
+                            onChange={(event) =>
+                                setGuestName(event.target.value)
+                            }
+                            aria-invalid={describedBy !== undefined}
+                            aria-describedby={describedBy}
+                        />
+                    )}
+                />
+                <section
+                    aria-labelledby="meeting-types-heading"
+                    className="flex flex-col gap-4"
+                >
+                    <h2
+                        id="meeting-types-heading"
+                        className="text-xl font-medium"
+                    >
+                        Выберите тип встречи
+                    </h2>
+                    <MeetingTypeCatalog
+                        selectedMeetingTypeId={selectedMeetingTypeId}
+                        onSelect={selectMeetingType}
+                    />
+                </section>
+                {selectedMeetingTypeId !== null && (
+                    <section
+                        aria-labelledby="slots-heading"
+                        className="flex flex-col gap-4"
+                    >
+                        <h2 id="slots-heading" className="text-xl font-medium">
+                            Выберите время
+                        </h2>
+                        <SlotPicker
+                            key={selectedMeetingTypeId}
+                            meetingTypeId={selectedMeetingTypeId}
+                            selectedSlot={selectedSlot}
+                            onSelect={setSelectedSlot}
+                        />
+                    </section>
+                )}
+                {error !== null &&
+                    !isValidationError(error) &&
+                    !isSlotTakenError(error) && (
+                        <Alert variant="destructive">
+                            <AlertDescription>
+                                Не удалось записаться. Попробуйте ещё раз.
+                            </AlertDescription>
+                        </Alert>
+                    )}
+                <Button
+                    type="submit"
+                    disabled={!canBook || isPending}
+                    className="self-start"
+                >
+                    {isPending ? 'Записываем…' : 'Записаться'}
+                </Button>
+            </form>
+        </BookingPage>
+    );
+}
+
+function BookingPage({ children }: { children: ReactNode }) {
     return (
         <>
             <Head title="Запись на звонок" />
             <AppLayout>
                 <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-6">
                     <h1 className="text-3xl font-semibold">Запись на звонок</h1>
-                    <section
-                        aria-labelledby="meeting-types-heading"
-                        className="flex flex-col gap-4"
-                    >
-                        <h2
-                            id="meeting-types-heading"
-                            className="text-xl font-medium"
-                        >
-                            Выберите тип встречи
-                        </h2>
-                        <MeetingTypeCatalog
-                            selectedMeetingTypeId={selectedMeetingTypeId}
-                            onSelect={selectMeetingType}
-                        />
-                    </section>
-                    {selectedMeetingTypeId !== null && (
-                        <section
-                            aria-labelledby="slots-heading"
-                            className="flex flex-col gap-4"
-                        >
-                            <h2
-                                id="slots-heading"
-                                className="text-xl font-medium"
-                            >
-                                Выберите время
-                            </h2>
-                            <SlotPicker
-                                key={selectedMeetingTypeId}
-                                meetingTypeId={selectedMeetingTypeId}
-                                selectedSlot={selectedSlot}
-                                onSelect={setSelectedSlot}
-                            />
-                        </section>
-                    )}
+                    {children}
                 </main>
             </AppLayout>
         </>
+    );
+}
+
+/**
+ * The booked meeting as the server saved it, in the owner timezone.
+ */
+function BookingConfirmation({
+    meeting,
+    onDismiss,
+}: {
+    meeting: Meeting;
+    onDismiss: () => void;
+}) {
+    const { timezone } = usePage().props;
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Вы записаны</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+                    <dt className="text-muted-foreground">Тип встречи</dt>
+                    <dd>{meeting.meetingType.name}</dd>
+                    <dt className="text-muted-foreground">Дата</dt>
+                    <dd>{formatDate(meeting.startsAt, timezone)}</dd>
+                    <dt className="text-muted-foreground">Время</dt>
+                    <dd>
+                        {formatTime(meeting.startsAt, timezone)}–
+                        {formatTime(meeting.endsAt, timezone)} ({timezone})
+                    </dd>
+                    <dt className="text-muted-foreground">Имя</dt>
+                    <dd>{meeting.guestName}</dd>
+                </dl>
+            </CardContent>
+            <CardFooter>
+                <Button type="button" onClick={onDismiss}>
+                    Понятно
+                </Button>
+            </CardFooter>
+        </Card>
     );
 }
 

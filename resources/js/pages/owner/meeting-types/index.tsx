@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import type { FormEvent, ReactNode } from 'react';
+import type { FormEvent } from 'react';
 import { toast } from 'sonner';
 import {
     createOwnerMeetingTypeMutation,
@@ -9,14 +9,14 @@ import {
     listOwnerMeetingTypesOptions,
     listOwnerMeetingTypesQueryKey,
 } from '@/api/@tanstack/react-query.gen';
-import type { ValidationError } from '@/api/types.gen';
 import { AppLayout } from '@/layouts/app-layout';
+import { isValidationError } from '@/lib/api-errors';
 import { formatDuration } from '@/lib/duration';
+import { FormField } from '@/components/form-field';
 import { MeetingTypeCard } from '@/components/meeting-type-card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -62,10 +62,6 @@ export default function OwnerMeetingTypesIndex() {
             </AppLayout>
         </>
     );
-}
-
-function isValidationError(error: unknown): error is ValidationError {
-    return typeof error === 'object' && error !== null && 'errors' in error;
 }
 
 function textField(formData: FormData, name: string): string {
@@ -202,33 +198,6 @@ function CreateMeetingTypeForm() {
                 {isPending ? 'Создаём…' : 'Создать'}
             </Button>
         </form>
-    );
-}
-
-function FormField({
-    id,
-    label,
-    errors,
-    control,
-}: {
-    id: string;
-    label: string;
-    errors: string[] | undefined;
-    control: (describedBy: string | undefined) => ReactNode;
-}) {
-    const errorId = `${id}-error`;
-    const hasErrors = errors !== undefined && errors.length > 0;
-
-    return (
-        <div className="flex flex-col gap-2">
-            <Label htmlFor={id}>{label}</Label>
-            {control(hasErrors ? errorId : undefined)}
-            {hasErrors && (
-                <p id={errorId} className="text-sm text-destructive">
-                    {errors.join(' ')}
-                </p>
-            )}
-        </div>
     );
 }
 
