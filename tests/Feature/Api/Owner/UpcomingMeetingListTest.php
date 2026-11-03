@@ -31,6 +31,11 @@ test('owner sees upcoming meetings of all types with their meeting type', functi
         ]]);
 });
 
+/**
+ * Documents the tie-break by id rather than guarding it: on SQLite the id is
+ * the rowid, and both the starts_at index and a table scan return rows with
+ * the same start in id order, so this test passes even without orderBy('id').
+ */
 test('owner sees meetings sorted by start, then by id for the same start', function () {
     $halfHourMeetingType = MeetingType::factory()->create(['duration_minutes' => 30]);
     $hourMeetingType = MeetingType::factory()->create(['duration_minutes' => 60]);
