@@ -9,7 +9,7 @@ import {
     listOwnerMeetingTypesQueryKey,
 } from '@/api/@tanstack/react-query.gen';
 import type { ValidationError } from '@/api/types.gen';
-import { AppHeader } from '@/components/app-header';
+import { AppLayout } from '@/components/app-layout';
 import { MeetingTypeCard } from '@/components/meeting-type-card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -22,8 +22,7 @@ export default function OwnerMeetingTypesIndex() {
     return (
         <>
             <Head title="Типы встреч" />
-            <div className="min-h-screen bg-background text-foreground">
-                <AppHeader />
+            <AppLayout>
                 <main className="mx-auto flex w-full max-w-2xl flex-col gap-8 p-6">
                     <h1 className="text-3xl font-semibold">Типы встреч</h1>
                     <section
@@ -51,7 +50,7 @@ export default function OwnerMeetingTypesIndex() {
                         <OwnerMeetingTypeList />
                     </section>
                 </main>
-            </div>
+            </AppLayout>
         </>
     );
 }
