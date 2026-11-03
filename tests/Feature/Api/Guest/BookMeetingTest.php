@@ -97,9 +97,24 @@ test('guest gets a validation error for an invalid field', function (array $inva
     'start not a date-time' => [['startsAt' => 'завтра в 10'], 'startsAt'],
     'start without an offset' => [['startsAt' => '2026-11-04T10:00:00'], 'startsAt'],
     'start with an empty fraction' => [['startsAt' => '2026-11-04T10:00:00.+03:00'], 'startsAt'],
-    'start on a nonexistent date' => [['startsAt' => '2026-02-30T10:00:00+03:00'], 'startsAt'],
     'meeting type not an integer' => [['meetingTypeId' => 'abc'], 'meetingTypeId'],
 ]);
+
+test('guest gets a validation error for a nonexistent date that would roll over to a bookable slot', function () {
+    $this->travelTo(CarbonImmutable::parse('2026-11-29 12:00', 'Europe/Moscow'));
+    $meetingType = MeetingType::factory()->create(['duration_minutes' => 30]);
+
+    $this->withoutRequestValidation()
+        ->postJson('/api/guest/v1/meetings', [
+            'meetingTypeId' => $meetingType->id,
+            'startsAt' => '2026-11-31T10:00:00+03:00',
+            'guestName' => 'Анна',
+        ])
+        ->assertUnprocessable()
+        ->assertOnlyJsonValidationErrors(['startsAt']);
+
+    $this->assertDatabaseEmpty('meetings');
+});
 
 test('guest gets a validation error rather than a conflict for invalid data at a taken time', function () {
     $meetingType = MeetingType::factory()->create(['duration_minutes' => 30]);
