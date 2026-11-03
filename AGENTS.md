@@ -21,11 +21,21 @@ Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/ag
 
 # Commit Messages
 
-- Write commit messages following [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `<type>[optional scope]: <description>`, for example `feat: add booking form` or `fix(api): return 404 for missing slot`.
+- Write commit messages following [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `<type>[optional scope]: <description>`, for example `feat: добавить форму бронирования` or `fix(api): вернуть 404 для неизвестного слота`.
 - Use only these types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
-- Write the description in the imperative mood, starting with a lowercase letter, without a trailing period.
+- Write the type and scope in English, and the description and body in Russian. Put the description in the infinitive, starting with a lowercase Cyrillic letter or a digit, without a trailing period. A PR title follows the same format.
 - The `.githooks/commit-msg` hook enforces this format and keeps its own copy of the type list; update both together. If the hook rejects a message, fix the message. Never bypass the hook with `--no-verify`.
 - Intermediate commits made at the user's request follow the same rules: pick the type by what the change does, never `wip:` or `tmp:`.
+
+=== .ai/language rules ===
+
+# Language
+
+- Write documentation in Russian: `README.md`, `GLOSSARY.md`, ADRs in `docs/adr/`, GitHub issues, PR titles and bodies, commit descriptions and bodies, and the CHANGELOG. Keep the section headings that the `/pr` skill template prescribes as they are.
+- Write all code in English: identifiers, comments, PHPDoc and TSDoc, doc comments in `contract/main.tsp`, test descriptions, and dataset keys.
+- Write instructions for agents in English: `.ai/guidelines/*`, `AGENTS.md`, and `docs/agents/*`.
+- Product content stays in the product's language, Russian: UI strings, `lang/`, seeders, test data, API error messages, and sample output quoted in code comments, such as `90 → «1 ч 30 мин»`.
+- Search for a domain concept in both languages. `GLOSSARY.md` pairs each Russian term with its English code name, for example **Встреча** (`Meeting`). Search docs, issues, and `git log` for the Russian term, and the code for the English name.
 
 === .ai/project-workflow rules ===
 

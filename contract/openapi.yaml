@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: Календарь звонков
-  description: 'Календарь звонков: гость без регистрации записывается на звонок к владельцу.'
+  title: Call Calendar
+  description: 'Call calendar: a guest books a call with the owner without signing up.'
   version: 0.0.0
 tags:
   - name: guest
@@ -10,7 +10,7 @@ paths:
   /api/guest/v1/meeting-types:
     get:
       operationId: listGuestMeetingTypes
-      description: Каталог типов встреч, отсортированный по `id`.
+      description: Meeting type catalog sorted by `id`.
       parameters: []
       responses:
         '200':
@@ -24,7 +24,7 @@ paths:
   /api/guest/v1/slots:
     get:
       operationId: listGuestSlots
-      description: Свободные слоты типа встречи на 14 дат окна записи, начиная с завтрашней.
+      description: Free slots of a meeting type for the 14 booking window dates, starting tomorrow.
       parameters:
         - name: meetingTypeId
           in: query
@@ -41,13 +41,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/SlotCalendarEnvelope'
         '404':
-          description: Ресурс не найден.
+          description: Resource not found.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFoundError'
         '422':
-          description: 'Ошибка данных: сообщения сгруппированы по полям запроса.'
+          description: 'Invalid data: messages are grouped by request field.'
           content:
             application/json:
               schema:
@@ -57,7 +57,7 @@ paths:
   /api/owner/v1/meeting-types:
     get:
       operationId: listOwnerMeetingTypes
-      description: Список типов встреч владельца, отсортированный по `id`.
+      description: Owner's meeting type list sorted by `id`.
       parameters: []
       responses:
         '200':
@@ -70,7 +70,7 @@ paths:
         - owner
     post:
       operationId: createOwnerMeetingType
-      description: Создать тип встречи.
+      description: Create a meeting type.
       parameters: []
       responses:
         '201':
@@ -80,7 +80,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/MeetingTypeEnvelope'
         '422':
-          description: 'Ошибка данных: сообщения сгруппированы по полям запроса.'
+          description: 'Invalid data: messages are grouped by request field.'
           content:
             application/json:
               schema:
@@ -115,7 +115,7 @@ components:
           type: string
           nullable: true
           maxLength: 1000
-      description: Данные нового типа встречи. Пустое описание сохраняется как `null`.
+      description: Data for a new meeting type. An empty description is stored as `null`.
     MeetingType:
       type: object
       required:
@@ -141,7 +141,7 @@ components:
           minimum: 15
           maximum: 240
           multipleOf: 15
-      description: 'Тип встречи: шаблон звонка с названием, необязательным описанием и длительностью.'
+      description: 'Meeting type: a call template with a name, an optional description, and a duration.'
     MeetingTypeEnvelope:
       type: object
       required:
@@ -149,7 +149,7 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/MeetingType'
-      description: Один тип встречи в конверте `data`.
+      description: A single meeting type in a `data` envelope.
     MeetingTypeList:
       type: object
       required:
@@ -159,7 +159,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MeetingType'
-      description: Каталог типов встреч в порядке создания.
+      description: Meeting type catalog in creation order.
     NotFoundError:
       type: object
       required:
@@ -167,7 +167,7 @@ components:
       properties:
         message:
           type: string
-      description: Ресурс не найден.
+      description: Resource not found.
     Slot:
       type: object
       required:
@@ -181,8 +181,8 @@ components:
           type: string
           format: date-time
       description: |-
-        Слот: свободный интервал длиной в длительность типа встречи.
-        Время в ISO 8601 со смещением часового пояса владельца.
+        Slot: a free interval as long as the meeting type duration.
+        Times are ISO 8601 with the owner's time zone offset.
     SlotCalendar:
       type: object
       required:
@@ -191,12 +191,12 @@ components:
       properties:
         timezone:
           type: string
-          description: Часовой пояс владельца, например `Europe/Moscow`.
+          description: Owner's time zone, for example `Europe/Moscow`.
         days:
           type: array
           items:
             $ref: '#/components/schemas/SlotDay'
-      description: Свободные слоты типа встречи на все даты окна записи.
+      description: Free slots of a meeting type for every date of the booking window.
     SlotCalendarEnvelope:
       type: object
       required:
@@ -204,7 +204,7 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/SlotCalendar'
-      description: Свободные слоты в конверте `data`.
+      description: Free slots in a `data` envelope.
     SlotDay:
       type: object
       required:
@@ -219,8 +219,8 @@ components:
           items:
             $ref: '#/components/schemas/Slot'
       description: |-
-        Дата окна записи по поясу владельца и её свободные слоты по возрастанию.
-        Дни без свободных слотов приходят с пустым списком.
+        A booking window date in the owner's time zone and its free slots in ascending order.
+        Days without free slots come with an empty list.
     ValidationError:
       type: object
       required:
@@ -235,4 +235,4 @@ components:
             type: array
             items:
               type: string
-      description: 'Ошибка данных: сообщения сгруппированы по полям запроса.'
+      description: 'Invalid data: messages are grouped by request field.'

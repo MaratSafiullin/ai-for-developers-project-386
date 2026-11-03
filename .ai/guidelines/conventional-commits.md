@@ -1,7 +1,7 @@
 # Commit Messages
 
-- Write commit messages following [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `<type>[optional scope]: <description>`, for example `feat: add booking form` or `fix(api): return 404 for missing slot`.
+- Write commit messages following [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `<type>[optional scope]: <description>`, for example `feat: добавить форму бронирования` or `fix(api): вернуть 404 для неизвестного слота`.
 - Use only these types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
-- Write the description in the imperative mood, starting with a lowercase letter, without a trailing period.
+- Write the type and scope in English, and the description and body in Russian. Put the description in the infinitive, starting with a lowercase Cyrillic letter or a digit, without a trailing period. A PR title follows the same format.
 - The `.githooks/commit-msg` hook enforces this format and keeps its own copy of the type list; update both together. If the hook rejects a message, fix the message. Never bypass the hook with `--no-verify`.
 - Intermediate commits made at the user's request follow the same rules: pick the type by what the change does, never `wip:` or `tmp:`.
