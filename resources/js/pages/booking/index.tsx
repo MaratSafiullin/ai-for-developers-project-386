@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { useQuery } from '@tanstack/react-query';
 import { listGuestMeetingTypesOptions } from '@/api/@tanstack/react-query.gen';
-import { AppLayout } from '@/components/app-layout';
+import { AppLayout } from '@/layouts/app-layout';
 import { MeetingTypeCard } from '@/components/meeting-type-card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';

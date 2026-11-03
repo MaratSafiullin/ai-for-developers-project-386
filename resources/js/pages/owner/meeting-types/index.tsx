@@ -9,7 +9,7 @@ import {
     listOwnerMeetingTypesQueryKey,
 } from '@/api/@tanstack/react-query.gen';
 import type { ValidationError } from '@/api/types.gen';
-import { AppLayout } from '@/components/app-layout';
+import { AppLayout } from '@/layouts/app-layout';
 import { MeetingTypeCard } from '@/components/meeting-type-card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';

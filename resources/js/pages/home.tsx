@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { AppLayout } from '@/components/app-layout';
+import { AppLayout } from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { index as bookingIndex } from '@/routes/booking';
 
