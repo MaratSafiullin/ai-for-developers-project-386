@@ -43,6 +43,13 @@ export type MeetingEnvelope = {
 };
 
 /**
+ * Upcoming meetings of all types, nearest first.
+ */
+export type MeetingList = {
+    data: Array<Meeting>;
+};
+
+/**
  * Meeting type: a call template with a name, an optional description, and a duration.
  */
 export type MeetingType = {
@@ -252,3 +259,19 @@ export type CreateOwnerMeetingTypeResponses = {
 };
 
 export type CreateOwnerMeetingTypeResponse = CreateOwnerMeetingTypeResponses[keyof CreateOwnerMeetingTypeResponses];
+
+export type ListOwnerMeetingsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/owner/v1/meetings';
+};
+
+export type ListOwnerMeetingsResponses = {
+    /**
+     * The request has succeeded.
+     */
+    200: MeetingList;
+};
+
+export type ListOwnerMeetingsResponse = ListOwnerMeetingsResponses[keyof ListOwnerMeetingsResponses];

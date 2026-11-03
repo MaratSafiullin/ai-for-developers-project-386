@@ -123,6 +123,13 @@ model MeetingEnvelope {
 }
 
 /**
+ * Upcoming meetings of all types, nearest first.
+ */
+model MeetingList {
+    data: Meeting[];
+}
+
+/**
  * Data for a booking: the meeting type, the start of a free slot, and the guest's name.
  */
 model CreateMeetingRequest {
@@ -224,4 +231,12 @@ namespace Owner {
         @statusCode statusCode: 201;
         @body body: MeetingTypeEnvelope;
     } | ValidationError;
+
+    /**
+     * Meetings of all types that have not ended yet, sorted by `startsAt`, then by `id`.
+     */
+    @route("/meetings")
+    @get
+    @operationId("listOwnerMeetings")
+    op listMeetings(): MeetingList;
 }

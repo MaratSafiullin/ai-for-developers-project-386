@@ -125,6 +125,20 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateMeetingTypeRequest'
+  /api/owner/v1/meetings:
+    get:
+      operationId: listOwnerMeetings
+      description: Meetings of all types that have not ended yet, sorted by `startsAt`, then by `id`.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingList'
+      tags:
+        - owner
 components:
   schemas:
     CreateMeetingRequest:
@@ -205,6 +219,16 @@ components:
         data:
           $ref: '#/components/schemas/Meeting'
       description: A single meeting in a `data` envelope.
+    MeetingList:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Meeting'
+      description: Upcoming meetings of all types, nearest first.
     MeetingType:
       type: object
       required:
