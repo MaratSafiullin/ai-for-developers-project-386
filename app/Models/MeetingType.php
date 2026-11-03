@@ -23,6 +23,12 @@ class MeetingType extends Model
     use HasFactory;
 
     /**
+     * The largest id a request may refer to: the contract types meeting type
+     * ids as int32, so larger values are rejected before any query.
+     */
+    public const int MAX_ID = 2147483647;
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

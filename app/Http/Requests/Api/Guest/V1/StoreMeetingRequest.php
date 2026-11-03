@@ -37,7 +37,7 @@ class StoreMeetingRequest extends FormRequest
     {
         return [
             'guestName' => ['required', 'string', 'max:100'],
-            'meetingTypeId' => ['bail', 'required', 'integer', 'max:2147483647', 'exists:meeting_types,id'],
+            'meetingTypeId' => ['bail', 'required', 'integer', 'max:'.MeetingType::MAX_ID, 'exists:meeting_types,id'],
             'startsAt' => ['bail', 'required', 'string', 'regex:'.self::STARTS_AT_PATTERN, 'date'],
         ];
     }

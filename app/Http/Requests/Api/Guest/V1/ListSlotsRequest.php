@@ -20,7 +20,7 @@ class ListSlotsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'meetingTypeId' => ['required', 'integer', 'max:2147483647'],
+            'meetingTypeId' => ['required', 'integer', 'max:'.MeetingType::MAX_ID],
         ];
     }
 
