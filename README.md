@@ -97,7 +97,7 @@ composer dev
 
 GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` и pull request выполняет `composer setup` и `composer ci:check`.
 
-Коммиты пишутся по [Conventional Commits](https://www.conventionalcommits.org/ru/v1.0.0/), формат проверяет хук `.githooks/commit-msg`. На клоне, где `composer setup` уже выполнялся до появления хука, подключите его один раз: `git config core.hooksPath .githooks`.
+Коммиты пишутся по [Conventional Commits](https://www.conventionalcommits.org/ru/v1.0.0/): тип и scope на английском, описание на русском в инфинитиве, например `feat(api): добавить календарь свободных слотов`. Формат проверяет хук `.githooks/commit-msg`. На клоне, где `composer setup` уже выполнялся до появления хука, подключите его один раз: `git config core.hooksPath .githooks`.
 
 ## Разработка с AI-агентами
 
@@ -124,6 +124,8 @@ php artisan boost:update
 `CLAUDE.md`, `.mcp.json`, `.claude/`, `.junie/` и каталоги других агентов остаются локальными и лежат в `.gitignore`. Исключение — `.claude/settings.json`: это общие правила разрешений Claude Code для проекта, он закоммичен. `CLAUDE.md` не создавайте: при его наличии Boost пишет инструкции туда, а не в `AGENTS.md`.
 
 ## Документация
+
+Документация пишется на русском, код (включая комментарии и названия тестов) и инструкции для агентов — на английском. Правило целиком: `.ai/guidelines/language.md`.
 
 - [GitHub Issues](https://github.com/MaratSafiullin/ai-for-developers-project-386/issues): спеки и тикеты текущей работы
 - `docs/agents/`: настройки скиллов агентов (трекер, лейблы триажа, доменные доки)

@@ -14,8 +14,17 @@ if [[ "$subject" =~ ^(Merge\ |Revert\ \"|fixup!\ |squash!\ |amend!\ ) ]]; then
     exit 0
 fi
 
+# release-please writes the release commit itself, in English.
+if [[ "$subject" =~ ^chore(\([a-z0-9._/-]+\))?:\ release\ v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    exit 0
+fi
+
 types='feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert'
-pattern="^(${types})(\([[:lower:][:digit:]._/-]+\))?!?: [[:lower:][:digit:]](.*[^.])?$"
+
+# The description is in Russian. Letters are listed one by one, because a range
+# like [а-я] or [[:lower:]] depends on the locale and breaks under LC_ALL=C.
+first='а|б|в|г|д|е|ё|ж|з|и|й|к|л|м|н|о|п|р|с|т|у|ф|х|ц|ч|ш|щ|ъ|ы|ь|э|ю|я|[0-9]'
+pattern="^(${types})(\([a-z0-9._/-]+\))?!?: (${first})(.*[^.])?$"
 
 if [[ "$subject" =~ $pattern ]]; then
     exit 0
@@ -28,8 +37,10 @@ Commit message does not follow Conventional Commits:
 
 Expected: <type>[optional scope][!]: <description>
 Types: ${types//|/, }
-The description starts with a lowercase letter and has no trailing period.
-Example: feat(api): return 404 for missing slot
+The type and scope are in English. The description is in Russian, in the
+infinitive, starts with a lowercase Cyrillic letter or a digit, and has no
+trailing period.
+Example: feat(api): вернуть 404 для неизвестного слота
 
 See .ai/guidelines/conventional-commits.md
 EOF
