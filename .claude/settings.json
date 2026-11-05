@@ -12,5 +12,8 @@
             "Edit(./node_modules/typescript/**)",
             "Edit(./node_modules/.bin/**)"
         ]
+    },
+    "enabledPlugins": {
+        "render@claude-plugins-official": true
     }
 }
