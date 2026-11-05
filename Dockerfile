@@ -23,6 +23,7 @@ RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 RUN npm ci --no-audit --no-fund
 RUN npm run build
 
+# Runtime: production vendor, code and built assets, without Composer and Node.
 FROM php:8.5-cli AS runtime
 WORKDIR /app
 COPY --from=app /app /app

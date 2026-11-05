@@ -33,7 +33,7 @@ jobs:
     permissions: {}
 
     steps:
-      - name: Trigger Render deploy of the release commit
+      - name: Trigger Render Deploy Of Release Commit
         env:
           DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
           RELEASE_SHA: ${{ needs.release-please.outputs.sha }}

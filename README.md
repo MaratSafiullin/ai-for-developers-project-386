@@ -180,7 +180,7 @@ php artisan boost:update
 
 ### MCP Render
 
-Сервисом на Render можно управлять из Claude Code через официальный плагин `render@claude-plugins-official`: смотреть деплои, логи и метрики. Плагин включён в закоммиченном `.claude/settings.json` (`enabledPlugins`). Ключей и токенов в репозитории нет, вход идёт через OAuth:
+Сервисом на Render можно управлять из Claude Code через официальный плагин `render@claude-plugins-official`: смотреть деплои, логи и метрики. Плагин включается для всех строкой `"enabledPlugins": { "render@claude-plugins-official": true }` в закоммиченном `.claude/settings.json`. Ключей и токенов в репозитории нет, вход идёт через OAuth:
 
 1. Запустите Claude Code в проекте и согласитесь установить плагин из `enabledPlugins` (или поставьте его вручную: `/plugin install render@claude-plugins-official`).
 2. Выполните `/mcp`, выберите сервер Render и пройдите вход в браузере под своим аккаунтом Render.
