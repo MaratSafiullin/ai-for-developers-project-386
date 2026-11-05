@@ -36,7 +36,11 @@ export const createGuestMeeting = <ThrowOnError extends boolean = false>(options
 });
 
 /**
- * Free slots of a meeting type for the 14 booking window dates, starting tomorrow.
+ * Free slots of a meeting type for the 14 booking window dates, starting tomorrow
+ * in the owner's time zone (`Europe/Moscow` by default).
+ * Working hours are 09:00–18:00 owner's time by default, the same for every day.
+ * Slots start every 15 minutes from the start of working hours, last as long as
+ * the meeting type, and end no later than the end of working hours.
  */
 export const listGuestSlots = <ThrowOnError extends boolean = false>(options: Options<ListGuestSlotsData, ThrowOnError>): RequestResult<ListGuestSlotsResponses, ListGuestSlotsErrors, ThrowOnError> => (options.client ?? client).get<ListGuestSlotsResponses, ListGuestSlotsErrors, ThrowOnError>({ url: '/api/guest/v1/slots', ...options });
 
