@@ -7,7 +7,7 @@
 Учебный проект Хекслета: https://ru.hexlet.io/programs/ai-for-developers
 Как это должно работать: https://files.hexlet.app/a/2ipc5m
 
-**Демо:** https://ai-for-developers-project-386.onrender.com (бесплатный тариф Render: первый запрос после простоя открывается долго, данные периодически сбрасываются, см. [Деплой](#деплой)).
+**Демо:** https://ai-for-developers-project-386-w6wf.onrender.com (бесплатный тариф Render: первый запрос после простоя открывается долго, данные периодически сбрасываются, см. [Деплой](#деплой)).
 
 ## Сценарий использования
 
@@ -122,7 +122,7 @@ GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` 
 
 ## Деплой
 
-Приложение работает на [Render](https://render.com) по адресу https://ai-for-developers-project-386.onrender.com. Сервис описан в Blueprint `render.yaml`: один web-сервис из `Dockerfile`, бесплатный тариф, регион Frankfurt, проверка здоровья по `/up`.
+Приложение работает на [Render](https://render.com) по адресу https://ai-for-developers-project-386-w6wf.onrender.com. Сервис описан в Blueprint `render.yaml`: один web-сервис из `Dockerfile`, бесплатный тариф, регион Frankfurt, проверка здоровья по `/up`.
 
 ### Релиз → деплой
 
