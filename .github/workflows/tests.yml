@@ -39,3 +39,31 @@ jobs:
 
       - name: Run CI Checks
         run: composer ci:check
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build Image
+        run: docker build --tag app .
+
+      - name: Start Container
+        run: docker run --detach --name app --env PORT=8080 --publish 8080:8080 app
+
+      - name: Check Home Page Responds 200
+        run: |
+          for _ in $(seq 1 60); do
+            status=$(curl --silent --output /dev/null --write-out '%{http_code}' http://localhost:8080/ || true)
+            if [ "$status" = "200" ]; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Home page did not respond 200, last status: $status"
+          docker logs app
+          exit 1

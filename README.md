@@ -7,6 +7,8 @@
 Учебный проект Хекслета: https://ru.hexlet.io/programs/ai-for-developers
 Как это должно работать: https://files.hexlet.app/a/2ipc5m
 
+**Демо:** https://ai-for-developers-project-386.onrender.com (бесплатный тариф Render: первый запрос после простоя открывается долго, данные периодически сбрасываются, см. [Деплой](#деплой)).
+
 ## Сценарий использования
 
 **Владелец**
@@ -102,7 +104,7 @@ e2e-тест (`tests/e2e/`) проходит [сценарий использо�
 
 Если Chromium не установлен (например, на клоне, где `composer setup` выполнялся раньше), поставьте его: `npx playwright install chromium`. При падении трейс прогона сохраняется в `test-results/` и открывается командой `npx playwright show-trace <путь к trace.zip>`.
 
-GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` и pull request выполняет `composer setup`, ставит системные зависимости Chromium (`npx playwright install --with-deps chromium`) и запускает `composer ci:check`.
+GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` и pull request выполняет `composer setup`, ставит системные зависимости Chromium (`npx playwright install --with-deps chromium`) и запускает `composer ci:check`. Параллельно job `docker` собирает Docker-образ, запускает его с `PORT=8080` и ждёт ответа 200 от главной страницы.
 
 Коммиты пишутся по [Conventional Commits](https://www.conventionalcommits.org/ru/v1.0.0/): тип и scope на английском, описание на русском в инфинитиве, например `feat(api): добавить календарь свободных слотов`. Формат проверяет хук `.githooks/commit-msg`. На клоне, где `composer setup` уже выполнялся до появления хука, подключите его один раз: `git config core.hooksPath .githooks`.
 
@@ -117,6 +119,40 @@ GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` 
 В CHANGELOG попадают `feat`, `fix`, `perf`, `revert`, `refactor` и `docs`; `chore`, `ci`, `build`, `test` и `style` скрыты. Настройки лежат в `release-please-config.json`, текущая версия — в `.release-please-manifest.json`.
 
 Релизный PR создаётся встроенным `GITHUB_TOKEN`, поэтому проверки `tests.yml` на нём сами не запускаются. Чтобы workflow мог открывать PR, в настройках репозитория (Settings → Actions → General) должна быть включена опция «Allow GitHub Actions to create and approve pull requests».
+
+## Деплой
+
+Приложение работает на [Render](https://render.com) по адресу https://ai-for-developers-project-386.onrender.com. Сервис описан в Blueprint `render.yaml`: один web-сервис из `Dockerfile`, бесплатный тариф, регион Frankfurt, проверка здоровья по `/up`.
+
+### Релиз → деплой
+
+1. Сливают релизный PR release-please, появляются тег и GitHub Release.
+2. В том же запуске `.github/workflows/release-please.yml` job `deploy` вызывает deploy hook Render с `ref=<SHA релизного коммита>`.
+3. Render собирает образ из этого коммита и переключает сервис на него.
+
+Обычные push в `main` сервис не трогают: в `render.yaml` стоит `autoDeployTrigger: off`. URL хука хранится в секрете репозитория `RENDER_DEPLOY_HOOK_URL`. Отдельный workflow `on: release` не подходит: релиз создаёт `GITHUB_TOKEN`, а его события не запускают другие workflow.
+
+Первичная настройка, один раз:
+
+1. В дашборде Render: New → Blueprint, выбрать этот репозиторий.
+2. Скопировать Deploy Hook из настроек сервиса в секрет репозитория `RENDER_DEPLOY_HOOK_URL` (Settings → Secrets and variables → Actions).
+
+`APP_KEY` генерирует Render (`generateValue`). Он выдаёт голую base64-строку, и entrypoint сам добавляет к ней префикс `base64:`.
+
+### Хранение данных
+
+База — файл SQLite внутри контейнера, постоянного диска нет. Все типы встреч и записи пропадают при каждом деплое, рестарте и засыпании сервиса. Бесплатный сервис засыпает после 15 минут без запросов, поэтому первый запрос после простоя ждёт запуска контейнера, это может занять около минуты.
+
+Сервер — `php artisan serve`, запросы он обрабатывает по одному. Двойное бронирование это не открывает: пересечения отсекает уникальный индекс в БД ([ADR 0002](docs/adr/0002-meeting-cells-unique-index.md)).
+
+### Локальный запуск образа
+
+```bash
+docker build -t calendar .
+docker run --rm -e PORT=8080 -p 8080:8080 calendar
+```
+
+Приложение откроется на http://localhost:8080. При старте `docker-entrypoint.sh` создаёт файл SQLite, применяет миграции и запускает сервер на `$PORT`. Если `APP_KEY` не передан, генерируется временный ключ.
 
 ## Разработка с AI-агентами
 
@@ -141,6 +177,14 @@ php artisan boost:update
 После правки `.ai/guidelines/` запустите `php artisan boost:update`. При `composer update` Boost делает это сам. Обновлённый `AGENTS.md` закоммитьте.
 
 `CLAUDE.md`, `.mcp.json`, `.claude/`, `.junie/` и каталоги других агентов остаются локальными и лежат в `.gitignore`. Исключение — `.claude/settings.json`: это общие правила разрешений Claude Code для проекта, он закоммичен. `CLAUDE.md` не создавайте: при его наличии Boost пишет инструкции туда, а не в `AGENTS.md`.
+
+### MCP Render
+
+Сервисом на Render можно управлять из Claude Code через официальный плагин `render@claude-plugins-official`: смотреть деплои, логи и метрики. Плагин включается для всех строкой `"enabledPlugins": { "render@claude-plugins-official": true }` в закоммиченном `.claude/settings.json`. Ключей и токенов в репозитории нет, вход идёт через OAuth:
+
+1. Запустите Claude Code в проекте и согласитесь установить плагин из `enabledPlugins` (или поставьте его вручную: `/plugin install render@claude-plugins-official`).
+2. Выполните `/mcp`, выберите сервер Render и пройдите вход в браузере под своим аккаунтом Render.
+3. Выберите рабочее пространство, где создан сервис, например попросив агента: «покажи последние деплои сервиса ai-for-developers-project-386».
 
 ## Документация
 
