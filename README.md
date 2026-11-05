@@ -130,7 +130,7 @@ GitHub Actions (`.github/workflows/tests.yml`) на каждый push в `main` 
 2. В том же запуске `.github/workflows/release-please.yml` job `deploy` вызывает deploy hook Render с `ref=<SHA релизного коммита>`.
 3. Render собирает образ из этого коммита и переключает сервис на него.
 
-Обычные push в `main` сервис не трогают: в `render.yaml` стоит `autoDeployTrigger: off`. URL хука хранится в секрете репозитория `RENDER_DEPLOY_HOOK_URL`. Отдельный workflow `on: release` не подходит: релиз создаёт `GITHUB_TOKEN`, а его события не запускают другие workflow.
+Обычные push в `main` сервис не трогают: в `render.yaml` стоит `autoDeployTrigger: off`. Исключение — изменения самого `render.yaml`: Render синхронизирует Blueprint и пересобирает сервис из текущего `main` (в списке деплоев триггер `blueprint_sync`). URL хука хранится в секрете репозитория `RENDER_DEPLOY_HOOK_URL`. Отдельный workflow `on: release` не подходит: релиз создаёт `GITHUB_TOKEN`, а его события не запускают другие workflow.
 
 Первичная настройка, один раз:
 
@@ -180,11 +180,11 @@ php artisan boost:update
 
 ### MCP Render
 
-Сервисом на Render можно управлять из Claude Code через официальный плагин `render@claude-plugins-official`: смотреть деплои, логи и метрики. Плагин включается для всех строкой `"enabledPlugins": { "render@claude-plugins-official": true }` в закоммиченном `.claude/settings.json`. Ключей и токенов в репозитории нет, вход идёт через OAuth:
+Сервисом на Render можно управлять из Claude Code через официальный плагин `render@claude-plugins-official`: смотреть деплои, логи и метрики. Ключей и токенов в репозитории нет, вход идёт через OAuth:
 
-1. Запустите Claude Code в проекте и согласитесь установить плагин из `enabledPlugins` (или поставьте его вручную: `/plugin install render@claude-plugins-official`).
-2. Выполните `/mcp`, выберите сервер Render и пройдите вход в браузере под своим аккаунтом Render.
-3. Выберите рабочее пространство, где создан сервис, например попросив агента: «покажи последние деплои сервиса ai-for-developers-project-386».
+1. Установите плагин: `/plugin install render@claude-plugins-official`, затем перезапустите Claude Code в проекте. Строка `"enabledPlugins": { "render@claude-plugins-official": true }` в закоммиченном `.claude/settings.json` включает плагин для проекта, но сама его не устанавливает и не предлагает установить.
+2. Выполните `/mcp`, выберите сервер `render` и пройдите вход в браузере под своим аккаунтом Render.
+3. Попросите агента, например: «покажи последние деплои сервиса ai-for-developers-project-386». При первом обращении он спросит, какое рабочее пространство Render использовать: выберите то, где создан сервис.
 
 ## Документация
 
