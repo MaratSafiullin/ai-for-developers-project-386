@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.1](https://github.com/MaratSafiullin/ai-for-developers-project-386/compare/v0.1.0...v0.1.1) (2026-11-05)
+
+
+### Documentation
+
+* **contract:** записать рабочие часы и часовой пояс в описании слотов ([498394d](https://github.com/MaratSafiullin/ai-for-developers-project-386/commit/498394d83e99aa0c00b66ee5e45eb9325716d3e2))
+* **contract:** записать рабочие часы и часовой пояс в описании слотов ([9b36175](https://github.com/MaratSafiullin/ai-for-developers-project-386/commit/9b361751bd803426c65363c0553a080e0932604a))
+* описать ручную установку плагина Render и деплой при синхронизации Blueprint ([#34](https://github.com/MaratSafiullin/ai-for-developers-project-386/issues/34)) ([0964b52](https://github.com/MaratSafiullin/ai-for-developers-project-386/commit/0964b52f30100ee2d6846b65314bfe9c3ac1aefe))
+* описать ручную установку плагина Render и деплой при синхронизации Blueprint ([#34](https://github.com/MaratSafiullin/ai-for-developers-project-386/issues/34)) ([791ac03](https://github.com/MaratSafiullin/ai-for-developers-project-386/commit/791ac03967b5368cb04e16a7b16bf7f7d82abc49))
+
 ## 0.1.0 (2026-11-05)
 
 
